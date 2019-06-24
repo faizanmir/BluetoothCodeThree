@@ -1,14 +1,18 @@
 package avishkaar.com.bluetoothcodethree;
 
+import android.Manifest;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -18,6 +22,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
+import java.security.Permission;
 import java.util.ArrayList;
 import java.util.Set;
 import java.util.UUID;
@@ -51,6 +56,14 @@ public class DeviceListActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        if(ContextCompat.checkSelfPermission(DeviceListActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED)
+        {
+            ActivityCompat.requestPermissions(DeviceListActivity.this,
+                    new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},
+                    0);
+        }
 
         bluetoothInterface= new bluetoothInterface() {
             @Override
@@ -194,7 +207,6 @@ public class DeviceListActivity extends AppCompatActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        Log.e(TAG, "onActivityResult: " +  requestCode +  "resultCode" +  resultCode + "REQUEST ENAble" + REQUEST_ENABLE_BT );
         if(requestCode==REQUEST_ENABLE_BT)
         {
             triggerDeviceAddition();
@@ -214,8 +226,6 @@ public class DeviceListActivity extends AppCompatActivity {
 
         }
     }
-
-
 
 }
 
