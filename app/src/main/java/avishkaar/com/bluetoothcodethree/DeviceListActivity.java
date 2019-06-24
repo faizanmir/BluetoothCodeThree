@@ -2,13 +2,11 @@ package avishkaar.com.bluetoothcodethree;
 
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
-import android.bluetooth.BluetoothSocket;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Color;
-import android.os.AsyncTask;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
@@ -20,16 +18,15 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Set;
 import java.util.UUID;
 
-public class MainActivity extends AppCompatActivity {
+public class DeviceListActivity extends AppCompatActivity {
     private BluetoothAdapter bluetoothAdapter;
     int REQUEST_ENABLE_BT = 0;
     BroadcastReceiver broadcastReceiver;
-    private static final String TAG = "MainActivity";
+    private static final String TAG = "DeviceListActivity";
     Set<BluetoothDevice> pairedBluetoothDevices;
     ArrayList<BluetoothDevice> pairedList;
     RecyclerView newDeviceRecyclerView;
@@ -40,6 +37,9 @@ public class MainActivity extends AppCompatActivity {
     static final UUID UUIDForARDUINO = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
     static final  String DEVICE_EXTRA= "dev";
     IntentFilter filter;
+    DeviceAdapter newDeviceAdapter;
+    RecyclerView.LayoutManager newDeviceLayoutManager;
+     bluetoothInterface bluetoothInterface;
 
     @Override
     protected void onResume() {
@@ -51,24 +51,24 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        init();
 
-        final bluetoothInterface bluetoothInterface = new bluetoothInterface() {
+        bluetoothInterface= new bluetoothInterface() {
             @Override
             public void bluetoothAddress(String deviceName, String deviceAddress, BluetoothDevice bluetoothDevice) {
                 Log.e(TAG, "bluetoothAddress: InterfaceTriggered" + "    " + "DeviceReceived : " + deviceName);
                 bluetoothAdapter.cancelDiscovery();
                 EXTRA_DATA = deviceAddress;
-                MainActivity.this.bluetoothDevice = bluetoothDevice;
-                Intent intent = new Intent(MainActivity.this, ControllerActivity.class);
+                DeviceListActivity.this.bluetoothDevice = bluetoothDevice;
+                Intent intent = new Intent(DeviceListActivity.this, ControllerActivity.class);
                 intent.putExtra(DEVICE_EXTRA,deviceAddress);
                 startActivity(intent);
             }
         };
+        init();
 
 
         if (!bluetoothAdapter.isEnabled()) {
-            Snackbar.make(findViewById(android.R.id.content), "Bluetooth not enabled", Snackbar.LENGTH_LONG)
+            Snackbar.make(findViewById(android.R.id.content), "Bluetooth not enabled", Snackbar.LENGTH_INDEFINITE)
                     .setAction("Enable", new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
@@ -76,28 +76,21 @@ public class MainActivity extends AppCompatActivity {
                             startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
                         }
                     })
-                    .setActionTextColor(Color.RED)
+                    .setActionTextColor(Color.WHITE)
                     .show();
         } else if (bluetoothAdapter == null) {
-            Toast.makeText(MainActivity.this, "Bluetooth not present", Toast.LENGTH_SHORT).show();
+            Toast.makeText(DeviceListActivity.this, "Bluetooth not present", Toast.LENGTH_SHORT).show();
         }
         pairedBluetoothDevices = bluetoothAdapter.getBondedDevices();
 
 
         //new Device Adapter used for displaying paired devices too
-        newBluetoothDevices.addAll(pairedList);
-        final DeviceAdapter newDeviceAdapter = new DeviceAdapter(newBluetoothDevices, bluetoothInterface);
-        RecyclerView.LayoutManager newDeviceLayoutManager = new LinearLayoutManager(this, RecyclerView.VERTICAL, false);
-        newDeviceRecyclerView.setLayoutManager(newDeviceLayoutManager);
+        newBluetoothDevices.addAll(pairedBluetoothDevices);
         newDeviceRecyclerView.setAdapter(newDeviceAdapter);
-        for (BluetoothDevice b : pairedBluetoothDevices
-        ) {
-            //pairedList.add(b);
-//            deviceAdapter.notifyDataSetChanged();
-            newBluetoothDevices.add(b);
-            newDeviceAdapter.notifyDataSetChanged();
+        newDeviceRecyclerView.setLayoutManager(newDeviceLayoutManager);
+        triggerDeviceAddition();
 
-        }
+
 
 
         broadcastReceiver = new BroadcastReceiver() {
@@ -147,7 +140,6 @@ public class MainActivity extends AppCompatActivity {
 
 
     private void init() {
-//        pairedDeviceRecyclerView = findViewById(R.id.bondedRecyclerView);
         newDeviceRecyclerView = findViewById(R.id.newDeviceRecyclerView);
         bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         pairedList = new ArrayList<>();
@@ -155,6 +147,9 @@ public class MainActivity extends AppCompatActivity {
         stop = findViewById(R.id.stopScan);
         newBluetoothDevices = new ArrayList<>();
         write = findViewById(R.id.write);
+        newDeviceAdapter  = new DeviceAdapter(newBluetoothDevices, bluetoothInterface);
+        newDeviceLayoutManager = new LinearLayoutManager(this, RecyclerView.VERTICAL, false);
+
     }
 
 
@@ -196,23 +191,32 @@ public class MainActivity extends AppCompatActivity {
                         | View.SYSTEM_UI_FLAG_FULLSCREEN);
     }
 
-    // Shows the system bars by removing all the flags
-// except for the ones that make the content appear under the system bars.
-    private void showSystemUI() {
-        View decorView = getWindow().getDecorView();
-        decorView.setSystemUiVisibility(
-                View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                        | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                        | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
-    }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        if(resultCode==REQUEST_ENABLE_BT)
+        Log.e(TAG, "onActivityResult: " +  requestCode +  "resultCode" +  resultCode + "REQUEST ENAble" + REQUEST_ENABLE_BT );
+        if(requestCode==REQUEST_ENABLE_BT)
         {
+            triggerDeviceAddition();
+        }
+    }
+
+
+    void triggerDeviceAddition()
+    {   bluetoothAdapter.startDiscovery();
+        pairedBluetoothDevices = bluetoothAdapter.getBondedDevices();
+        for (BluetoothDevice b : pairedBluetoothDevices
+        ) {
+            if(!newBluetoothDevices.contains(b)) {
+                newBluetoothDevices.add(b);
+                newDeviceAdapter.notifyDataSetChanged();
+            }
 
         }
     }
+
+
+
 }
 
 

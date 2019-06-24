@@ -25,17 +25,14 @@ public class CustomCommandDialog extends DialogFragment {
     SharedPreferences sharedPreferences;
     SharedPreferences.Editor edit;
     int flag;
-    interface dataFromDialog{
-        void triggerChange();
-    }
     dataFromDialog refer;
+
    @SuppressLint("CommitPrefEdits")
    void sharedPrefPass(SharedPreferences sharedPreferences, int flag){
        this.sharedPreferences = sharedPreferences;
        this.flag = flag;
        edit =  sharedPreferences.edit();
    }
-
 
     @Override
     public void onStart() {
@@ -100,6 +97,7 @@ public class CustomCommandDialog extends DialogFragment {
         });
 
     }
+
     void setTextViews()
     {
         if(flag==1)
@@ -122,5 +120,9 @@ public class CustomCommandDialog extends DialogFragment {
             buttonPress.setText(sharedPreferences.getString(Constants.button3Pressed,""));
 
         }
+    }
+
+    interface dataFromDialog {
+        void triggerChange();
     }
 }

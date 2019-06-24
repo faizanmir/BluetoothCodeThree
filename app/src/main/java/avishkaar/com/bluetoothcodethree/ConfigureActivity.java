@@ -10,14 +10,13 @@ import android.widget.TextView;
 
 public class ConfigureActivity extends AppCompatActivity implements CustomCommandDialog.dataFromDialog {
     SharedPreferences sharedPreferences;
-    CardView colorButtonOne,colorButtonTwo,colorButtonThree,colorButtonFour,done,configureCard;
+    CardView colorButtonOne,colorButtonTwo,colorButtonThree,colorButtonFour,done;
     TextView blueText,redText,orangeText,yellowText;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_configure);
         sharedPreferences = getSharedPreferences(ControllerActivity.RemoteSharedPreference, Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharedPreferences.edit();
         colorButtonOne = findViewById(R.id.custom1);//blue
         colorButtonTwo = findViewById(R.id.custom2);//orange
         colorButtonThree = findViewById(R.id.custom3);//red
@@ -27,19 +26,7 @@ public class ConfigureActivity extends AppCompatActivity implements CustomComman
         yellowText = findViewById(R.id.yellowText);
         orangeText = findViewById(R.id.orangeText);
         done = findViewById(R.id.done);
-
-
-
-        blueText.setText(sharedPreferences.getString(Constants.button1Pressed,""));
-        orangeText.setText(sharedPreferences.getString(Constants.button2Pressed,""));
-        yellowText.setText(sharedPreferences.getString(Constants.button3Pressed,""));
-        redText.setText(sharedPreferences.getString(Constants.button4Pressed,""));
-
-
-
-
-
-
+        triggerChange();
         done.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -81,15 +68,6 @@ public class ConfigureActivity extends AppCompatActivity implements CustomComman
             }
         });
 
-
-
-
-
-
-
-
-
-
     }
     @Override
     public void onWindowFocusChanged(boolean hasFocus) {
@@ -114,16 +92,6 @@ public class ConfigureActivity extends AppCompatActivity implements CustomComman
                         // Hide the nav bar and status bar
                         | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
                         | View.SYSTEM_UI_FLAG_FULLSCREEN);
-    }
-
-    // Shows the system bars by removing all the flags
-// except for the ones that make the content appear under the system bars.
-    private void showSystemUI() {
-        View decorView = getWindow().getDecorView();
-        decorView.setSystemUiVisibility(
-                View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                        | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                        | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
     }
 
     @Override
