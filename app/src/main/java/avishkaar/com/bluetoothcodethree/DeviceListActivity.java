@@ -22,10 +22,14 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
-import java.security.Permission;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
 import java.util.ArrayList;
 import java.util.Set;
 import java.util.UUID;
+
+import avishkaar.com.bluetoothcodethree.Adapters.DeviceAdapter;
 
 public class DeviceListActivity extends AppCompatActivity {
     private BluetoothAdapter bluetoothAdapter;
@@ -45,6 +49,7 @@ public class DeviceListActivity extends AppCompatActivity {
     DeviceAdapter newDeviceAdapter;
     RecyclerView.LayoutManager newDeviceLayoutManager;
      bluetoothInterface bluetoothInterface;
+     DatabaseReference firebaseReference ;
 
     @Override
     protected void onResume() {
@@ -55,6 +60,7 @@ public class DeviceListActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        firebaseReference = FirebaseDatabase.getInstance().getReference();
         setContentView(R.layout.activity_main);
 
         if(ContextCompat.checkSelfPermission(DeviceListActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION)

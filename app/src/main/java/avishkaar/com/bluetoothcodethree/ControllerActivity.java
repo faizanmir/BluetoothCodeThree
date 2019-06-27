@@ -8,22 +8,38 @@ import android.bluetooth.BluetoothSocket;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
 import java.io.IOException;
 import java.lang.ref.WeakReference;
+import java.util.ArrayList;
+
+import avishkaar.com.bluetoothcodethree.ModelClasses.ConfigClass;
+import avishkaar.com.bluetoothcodethree.ModelClasses.DataStringClass;
+import avishkaar.com.bluetoothcodethree.ModelClasses.RemoteModelClass;
 
 import static avishkaar.com.bluetoothcodethree.DeviceListActivity.UUIDForARDUINO;
 
@@ -45,6 +61,9 @@ public class ControllerActivity extends AppCompatActivity implements View.OnTouc
     BluetoothManager bluetoothManager;
     RelativeLayout overlay;
     CardView connectingCard;
+    DatabaseReference firebaseDatabase;
+    ArrayList<RemoteModelClass> arrayList;
+    Switch aSwitch;
     @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,37 +88,135 @@ public class ControllerActivity extends AppCompatActivity implements View.OnTouc
             }
         });
 
+        aSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if(isChecked)
+                {
+                    writeToBluetooth("X");//place holder
+                }
+                else {
+                    writeToBluetooth("X");//place Holder
+                }
+            }
+        });
+
+//        firebaseDatabase.addChildEventListener(new ChildEventListener() {
+//            @Override
+//            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+//                Log.e(TAG, "onDataChange: "  + dataSnapshot.getValue());
+//                RemoteModelClass test = dataSnapshot.getValue(RemoteModelClass.class);
+//                if (test != null) {
+//                    Log.e(TAG, "onChildAdded: " +  test.getConfig().getRedButton().getOnPressed() );
+//                }
+//                arrayList.add(test);
+//                Log.e(TAG, "onChildAdded: " + arrayList.size() );
+//
+//               // Log.e(TAG, "onChildAdded:Data from Array "+arrayList.get(3).getConfig().getRedButton().getOnPressed() );
+//
+//
+//            }
+//
+//            @Override
+//            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+//
+//            }
+//
+//            @Override
+//            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+//
+//            }
+//
+//            @Override
+//            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+//
+//            }
+//
+//            @Override
+//            public void onCancelled(@NonNull DatabaseError databaseError) {
+//
+//            }
+//        });
+//
+//       ConfigClass test = new ConfigClass("Remote0"
+//               ,new DataStringClass("L","R")
+//               ,new DataStringClass("P","Q")
+//               ,new DataStringClass("R","S")
+//               ,new DataStringClass("K","L")
+//       );
+//
+//        ConfigClass test1 = new ConfigClass("RemoteK"
+//                ,new DataStringClass("R","R")
+//                ,new DataStringClass("P","Q")
+//                ,new DataStringClass("R","S")
+//                ,new DataStringClass("K","L")
+//        );
+//
+//        ConfigClass test2 = new ConfigClass("RemoteKH"
+//                ,new DataStringClass("R","R")
+//                ,new DataStringClass("P","Q")
+//                ,new DataStringClass("R","S")
+//                ,new DataStringClass("K","L")
+//        );
+//
+//        ConfigClass test3 = new ConfigClass("RemoteKH"
+//                ,new DataStringClass("R","R")
+//                ,new DataStringClass("P","Q")
+//                ,new DataStringClass("R","S")
+//                ,new DataStringClass("K","L")
+//        );
+//
+//       RemoteModelClass remoteModelClass =  new RemoteModelClass(test);
+//       RemoteModelClass remoteModelClass1 = new RemoteModelClass(test1);
+//       RemoteModelClass remoteModelClass2 = new RemoteModelClass(test2);
+//       RemoteModelClass remoteModelClass3 = new RemoteModelClass(test3);
+//
+//
+//        firebaseDatabase.child("Douglas Remote").setValue(remoteModelClass);
+//        firebaseDatabase.child("Jake's Remote").setValue(remoteModelClass1);
+//        firebaseDatabase.child("Frank's Remote").setValue(remoteModelClass2);
+//        firebaseDatabase.child("James's Remote").setValue(remoteModelClass3);
+
+
+
+
+
+
+
 
 
     }
 
     @Override
     public boolean onTouch(View v, MotionEvent event) {
+
+
         switch (v.getId())
         {
             case(R.id.upMotion):
-                actionDetection(event, "X", "F");
+                actionDetection(event, "X", "F",R.id.upMotion);
                 break;
             case (R.id.downMotion):
-                actionDetection(event, "X", "B");
+                actionDetection(event, "X", "B",R.id.downMotion);
                 break;
             case(R.id.leftMotion):
-                actionDetection(event, "X", "L");
+                actionDetection(event, "X", "L",R.id.leftMotion);
                 break;
             case(R.id.rightMotion):
-                actionDetection(event, "X", "R");
+                actionDetection(event, "X", "R",R.id.rightMotion);
                 break;
             case(R.id.custom1):
-                actionDetection(event,sharedPreferences.getString(Constants.button1Released,""),sharedPreferences.getString(Constants.button1Pressed,""));
+                actionDetection(event,sharedPreferences.getString(Constants.button1Released,""),sharedPreferences.getString(Constants.button1Pressed,""),R.id.custom1);
                 break;
             case(R.id.custom2):
-                actionDetection(event,sharedPreferences.getString(Constants.button2Released,""),sharedPreferences.getString(Constants.button2Pressed,""));
+                actionDetection(event,sharedPreferences.getString(Constants.button2Released,""),sharedPreferences.getString(Constants.button2Pressed,""),R.id.custom2);
                 break;
             case(R.id.custom3):
-                actionDetection(event,sharedPreferences.getString(Constants.button4Released,""),sharedPreferences.getString(Constants.button4Pressed,""));
+                actionDetection(event,sharedPreferences.getString(Constants.button4Released,""),sharedPreferences.getString(Constants.button4Pressed,""),R.id.custom3);
+
                 break;
             case(R.id.custom4):
-                actionDetection(event,sharedPreferences.getString(Constants.button3Released,""),sharedPreferences.getString(Constants.button3Pressed,""));
+                actionDetection(event,sharedPreferences.getString(Constants.button3Released,""),sharedPreferences.getString(Constants.button3Pressed,""),R.id.custom4);
                 break;
         }
         return true;
@@ -181,13 +298,60 @@ public class ControllerActivity extends AppCompatActivity implements View.OnTouc
 
     }
 
-    void actionDetection(MotionEvent event,String instructionUp,String instructionDown)
+    void actionDetection(MotionEvent event,String instructionUp,String instructionDown,int viewId)
     {
         if(!((instructionDown.isEmpty())&&(instructionUp.isEmpty()))) {
-        Log.e(TAG, "actionDetection: " + instructionUp + instructionDown);
-        if (event.getAction() == MotionEvent.ACTION_DOWN) {
+
+            CardView c = findViewById(viewId);
+
+
+            if (event.getAction() == MotionEvent.ACTION_DOWN) {
+            if(viewId == R.id.upMotion|| viewId ==R.id.downMotion || viewId ==R.id.leftMotion || viewId == R.id.rightMotion) {
+                c.setCardBackgroundColor(android.graphics.Color.parseColor("#000000"));
+            }
+
+            else if(viewId == colorButtonOne.getId())
+            {
+                c.setCardBackgroundColor(Color.parseColor("#800064ab"));
+            }
+            else if(viewId == colorButtonTwo.getId())
+            {
+                c.setCardBackgroundColor(Color.parseColor("#80ff6100"));
+            }
+            else if(viewId ==  colorButtonThree.getId())
+            {
+                c.setCardBackgroundColor(Color.parseColor("#80fc0014"));
+            }
+            else if(viewId == colorButtonFour.getId())
+            {
+                c.setCardBackgroundColor(Color.parseColor("#80ffaa00"));
+            }
+
             writeToBluetooth(instructionDown);
-        } else if (event.getAction() == MotionEvent.ACTION_UP) {
+        }
+            else if (event.getAction() == MotionEvent.ACTION_UP) {
+
+
+            if(viewId == R.id.upMotion|| viewId ==R.id.downMotion || viewId ==R.id.leftMotion || viewId == R.id.rightMotion){
+            c.setCardBackgroundColor(Color.parseColor("#353535"));
+            }
+            else if(viewId == colorButtonOne.getId())
+            {
+                c.setCardBackgroundColor(Color.parseColor("#0064ab"));
+            }
+            else if(viewId == colorButtonTwo.getId())
+            {
+                c.setCardBackgroundColor(Color.parseColor("#ff6100"));
+            }
+            else if(viewId ==  colorButtonThree.getId())
+            {
+                c.setCardBackgroundColor(Color.parseColor("#fc0014"));
+            }
+            else if(viewId == colorButtonFour.getId())
+            {
+                c.setCardBackgroundColor(Color.parseColor("#ffaa00"));
+            }
+
             writeToBluetooth(instructionUp);
         }
     }
@@ -204,6 +368,7 @@ public class ControllerActivity extends AppCompatActivity implements View.OnTouc
         orangeText.setText(sharedPreferences.getString(Constants.button2Pressed,""));
         yellowText.setText(sharedPreferences.getString(Constants.button3Pressed,""));
         redText.setText(sharedPreferences.getString(Constants.button4Pressed,""));
+
     }
 
 
@@ -256,6 +421,10 @@ public class ControllerActivity extends AppCompatActivity implements View.OnTouc
         bluetoothManager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
         overlay = findViewById(R.id.overlay);
         connectingCard = findViewById(R.id.connectingCard);
+        firebaseDatabase = FirebaseDatabase.getInstance().getReference();
+        arrayList = new ArrayList<>();
+        aSwitch = findViewById(R.id.aSwitch);
+
     }
 
     @Override

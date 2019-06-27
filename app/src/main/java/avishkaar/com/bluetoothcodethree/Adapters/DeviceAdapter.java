@@ -1,4 +1,4 @@
-package avishkaar.com.bluetoothcodethree;
+package avishkaar.com.bluetoothcodethree.Adapters;
 
 import android.bluetooth.BluetoothDevice;
 import android.support.annotation.NonNull;
@@ -7,11 +7,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-
 import java.util.ArrayList;
+import avishkaar.com.bluetoothcodethree.R;
+import avishkaar.com.bluetoothcodethree.bluetoothInterface;
+
 public class DeviceAdapter extends RecyclerView.Adapter<DeviceAdapter.DeviceViewHolder> {
    private ArrayList <BluetoothDevice> bluetoothDeviceArrayList;
-    private bluetoothInterface bluetoothInterface;
+    private avishkaar.com.bluetoothcodethree.bluetoothInterface bluetoothInterface;
     public DeviceAdapter(ArrayList<BluetoothDevice> bluetoothDeviceArrayList,bluetoothInterface bluetoothInterface) {
         this.bluetoothDeviceArrayList = bluetoothDeviceArrayList;
         this.bluetoothInterface = bluetoothInterface;

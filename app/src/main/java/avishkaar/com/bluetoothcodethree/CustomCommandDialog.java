@@ -20,7 +20,7 @@ import android.widget.EditText;
 
 
 public class CustomCommandDialog extends DialogFragment {
-    CardView done;
+    CardView done,identifier;
     EditText buttonPress,buttonRelease;
     SharedPreferences sharedPreferences;
     SharedPreferences.Editor edit;
@@ -67,6 +67,8 @@ public class CustomCommandDialog extends DialogFragment {
         done = view.findViewById(R.id.done);
         buttonPress = view.findViewById(R.id.buttonPress);
         buttonRelease = view.findViewById(R.id.buttonRelease);
+        identifier = view.findViewById(R.id.identifier);
+
         setTextViews();
         done.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -75,6 +77,7 @@ public class CustomCommandDialog extends DialogFragment {
                 {
                     edit.putString(Constants.button1Pressed,buttonPress.getText().toString()).apply();
                     edit.putString(Constants.button1Released,buttonRelease.getText().toString()).apply();
+
                 }
                 else if (flag ==2)
                 {
@@ -103,21 +106,24 @@ public class CustomCommandDialog extends DialogFragment {
         if(flag==1)
         {   buttonPress.setText(sharedPreferences.getString(Constants.button1Pressed,""));
             buttonRelease.setText(sharedPreferences.getString(Constants.button1Released,""));
+            identifier.setCardBackgroundColor(Color.parseColor("#0064ab"));
 
         }
         else if (flag ==2)
         {   buttonPress.setText(sharedPreferences.getString(Constants.button2Pressed,""));
             buttonRelease.setText(sharedPreferences.getString(Constants.button2Released,""));
-
+            identifier.setCardBackgroundColor(Color.parseColor("#ff6100"));
         }
         else if (flag==3)
         {   buttonPress.setText(sharedPreferences.getString(Constants.button4Pressed,""));
             buttonRelease.setText(sharedPreferences.getString(Constants.button4Released,""));
+            identifier.setCardBackgroundColor(Color.parseColor("#fc0014"));
 
         }
         else if(flag ==4)
         {   buttonRelease.setText(sharedPreferences.getString(Constants.button3Released,""));
             buttonPress.setText(sharedPreferences.getString(Constants.button3Pressed,""));
+            identifier.setCardBackgroundColor(Color.parseColor("#ffaa00"));
 
         }
     }

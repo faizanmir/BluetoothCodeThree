@@ -10,7 +10,4 @@ public class Constants {
     static final String button4Pressed = "btn4Press";
     static final String button4Released = "btn4Release";
 
-
-
-
 }
