@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/signin"
+    tools:context=".SignUpActivity">
+    <RelativeLayout
+        android:id="@+id/topRelativeLayout"
+        android:layout_width="match_parent"
+        android:layout_height="75dp">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:text="Sign Up or Login"
+            android:textColor="@android:color/white"
+            android:textSize="30sp"
+            />
+
+
+    </RelativeLayout>
+
+    <android.support.v7.widget.CardView
+        android:id="@+id/emailCard"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/topRelativeLayout"
+        android:layout_centerHorizontal="true"
+        android:layout_margin="20dp"
+        app:cardCornerRadius="20dp"
+        >
+    <EditText
+        android:id="@+id/email"
+        android:layout_width="400dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="15dp"
+        android:background="@android:color/white"
+        android:hint="Email"
+        android:inputType="textEmailAddress"/>
+
+    </android.support.v7.widget.CardView>
+    <android.support.v7.widget.CardView
+        android:id="@+id/passwordCard"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/emailCard"
+        android:layout_centerHorizontal="true"
+        android:layout_margin="20dp"
+        app:cardCornerRadius="20dp"
+        >
+
+    <EditText
+        android:id="@+id/password"
+        android:layout_width="400dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/emailCard"
+        android:layout_margin="15dp"
+        android:background="@android:color/white"
+        android:hint="Password"
+        android:inputType="textPassword"
+
+
+        />
+    </android.support.v7.widget.CardView>
+    <Button
+        android:id="@+id/signUpbutton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/passwordCard"
+        android:layout_centerHorizontal="true"
+        android:background="@drawable/signup"
+        android:text="Sign in"
+        android:textColor="@android:color/white"
+        />
+
+
+</RelativeLayout>

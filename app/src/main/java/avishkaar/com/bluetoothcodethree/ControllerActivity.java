@@ -11,8 +11,6 @@ import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
 import android.util.Log;
@@ -27,9 +25,6 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.firebase.database.ChildEventListener;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
@@ -37,8 +32,6 @@ import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 
-import avishkaar.com.bluetoothcodethree.ModelClasses.ConfigClass;
-import avishkaar.com.bluetoothcodethree.ModelClasses.DataStringClass;
 import avishkaar.com.bluetoothcodethree.ModelClasses.RemoteModelClass;
 
 import static avishkaar.com.bluetoothcodethree.DeviceListActivity.UUIDForARDUINO;
@@ -54,7 +47,7 @@ public class ControllerActivity extends AppCompatActivity implements View.OnTouc
     CardView up,down,right,left;
     ImageView upImg,dwnImg,leftImg,rightImg,edit;
     static final String RemoteSharedPreference = "REMOTE-PREFERENCE";
-    CardView colorButtonOne, colorButtonTwo, colorButtonThree, colorButtonFour, configureCard, statusCard, back;
+    CardView blue, orange, yellow, red, configureCard, statusCard, back;
     SharedPreferences sharedPreferences;
     TextView blueText,redText,orangeText,yellowText;
     TextView status;
@@ -69,7 +62,7 @@ public class ControllerActivity extends AppCompatActivity implements View.OnTouc
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         init();
-
+        setTextViews();
 
 
         configureCard.setOnClickListener(new View.OnClickListener() {
@@ -101,90 +94,6 @@ public class ControllerActivity extends AppCompatActivity implements View.OnTouc
             }
         });
 
-//        firebaseDatabase.addChildEventListener(new ChildEventListener() {
-//            @Override
-//            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-//                Log.e(TAG, "onDataChange: "  + dataSnapshot.getValue());
-//                RemoteModelClass test = dataSnapshot.getValue(RemoteModelClass.class);
-//                if (test != null) {
-//                    Log.e(TAG, "onChildAdded: " +  test.getConfig().getRedButton().getOnPressed() );
-//                }
-//                arrayList.add(test);
-//                Log.e(TAG, "onChildAdded: " + arrayList.size() );
-//
-//               // Log.e(TAG, "onChildAdded:Data from Array "+arrayList.get(3).getConfig().getRedButton().getOnPressed() );
-//
-//
-//            }
-//
-//            @Override
-//            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-//
-//            }
-//
-//            @Override
-//            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
-//
-//            }
-//
-//            @Override
-//            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-//
-//            }
-//
-//            @Override
-//            public void onCancelled(@NonNull DatabaseError databaseError) {
-//
-//            }
-//        });
-//
-//       ConfigClass test = new ConfigClass("Remote0"
-//               ,new DataStringClass("L","R")
-//               ,new DataStringClass("P","Q")
-//               ,new DataStringClass("R","S")
-//               ,new DataStringClass("K","L")
-//       );
-//
-//        ConfigClass test1 = new ConfigClass("RemoteK"
-//                ,new DataStringClass("R","R")
-//                ,new DataStringClass("P","Q")
-//                ,new DataStringClass("R","S")
-//                ,new DataStringClass("K","L")
-//        );
-//
-//        ConfigClass test2 = new ConfigClass("RemoteKH"
-//                ,new DataStringClass("R","R")
-//                ,new DataStringClass("P","Q")
-//                ,new DataStringClass("R","S")
-//                ,new DataStringClass("K","L")
-//        );
-//
-//        ConfigClass test3 = new ConfigClass("RemoteKH"
-//                ,new DataStringClass("R","R")
-//                ,new DataStringClass("P","Q")
-//                ,new DataStringClass("R","S")
-//                ,new DataStringClass("K","L")
-//        );
-//
-//       RemoteModelClass remoteModelClass =  new RemoteModelClass(test);
-//       RemoteModelClass remoteModelClass1 = new RemoteModelClass(test1);
-//       RemoteModelClass remoteModelClass2 = new RemoteModelClass(test2);
-//       RemoteModelClass remoteModelClass3 = new RemoteModelClass(test3);
-//
-//
-//        firebaseDatabase.child("Douglas Remote").setValue(remoteModelClass);
-//        firebaseDatabase.child("Jake's Remote").setValue(remoteModelClass1);
-//        firebaseDatabase.child("Frank's Remote").setValue(remoteModelClass2);
-//        firebaseDatabase.child("James's Remote").setValue(remoteModelClass3);
-
-
-
-
-
-
-
-
-
     }
 
     @Override
@@ -205,18 +114,18 @@ public class ControllerActivity extends AppCompatActivity implements View.OnTouc
             case(R.id.rightMotion):
                 actionDetection(event, "X", "R",R.id.rightMotion);
                 break;
-            case(R.id.custom1):
-                actionDetection(event,sharedPreferences.getString(Constants.button1Released,""),sharedPreferences.getString(Constants.button1Pressed,""),R.id.custom1);
+            case(R.id.blue):
+                actionDetection(event,sharedPreferences.getString(Constants.bluePressed,""),sharedPreferences.getString(Constants.blueRelease,""),R.id.blue);
                 break;
-            case(R.id.custom2):
-                actionDetection(event,sharedPreferences.getString(Constants.button2Released,""),sharedPreferences.getString(Constants.button2Pressed,""),R.id.custom2);
+            case(R.id.orange):
+                actionDetection(event,sharedPreferences.getString(Constants.orangePressed,""),sharedPreferences.getString(Constants.orangeRelease,""),R.id.orange);
                 break;
-            case(R.id.custom3):
-                actionDetection(event,sharedPreferences.getString(Constants.button4Released,""),sharedPreferences.getString(Constants.button4Pressed,""),R.id.custom3);
+            case(R.id.yellow):
+                actionDetection(event,sharedPreferences.getString(Constants.yellowPress,""),sharedPreferences.getString(Constants.yellowReleased,""),R.id.yellow);
 
                 break;
-            case(R.id.custom4):
-                actionDetection(event,sharedPreferences.getString(Constants.button3Released,""),sharedPreferences.getString(Constants.button3Pressed,""),R.id.custom4);
+            case(R.id.red):
+                actionDetection(event,sharedPreferences.getString(Constants.redPressed,""),sharedPreferences.getString(Constants.redReleased,""),R.id.red);
                 break;
         }
         return true;
@@ -284,75 +193,82 @@ public class ControllerActivity extends AppCompatActivity implements View.OnTouc
     }
     void writeToBluetooth(String instruction)
     {
+        Log.e(TAG, "writeToBluetooth: " + instruction );
         if(socket!=null)
         {
             try {
                 socket.getOutputStream().write(instruction.getBytes());
                 socket.getOutputStream().flush();
-                Log.e(TAG, "writeToBluetooth: " +  "  " + "Command Written"  + instruction );
+               // Log.e(TAG, "writeToBluetooth: " +  "  " + "Command Written"  + instruction );
             } catch (IOException e) {
-                e.printStackTrace();
+               // e.printStackTrace();
             }
         }
 
 
     }
 
-    void actionDetection(MotionEvent event,String instructionUp,String instructionDown,int viewId)
+    void actionDetection(MotionEvent event,String pressed,String released,int viewId)
     {
-        if(!((instructionDown.isEmpty())&&(instructionUp.isEmpty()))) {
-
+        if(!((pressed.isEmpty())&&(released.isEmpty()))) {
+            Log.e(TAG, "actionDetection: " +"Pressed : " +pressed + "Released" + released );
             CardView c = findViewById(viewId);
-
 
             if (event.getAction() == MotionEvent.ACTION_DOWN) {
             if(viewId == R.id.upMotion|| viewId ==R.id.downMotion || viewId ==R.id.leftMotion || viewId == R.id.rightMotion) {
                 c.setCardBackgroundColor(android.graphics.Color.parseColor("#000000"));
             }
 
-            else if(viewId == colorButtonOne.getId())
+            else if(viewId == blue.getId())
             {
                 c.setCardBackgroundColor(Color.parseColor("#800064ab"));
+                writeToBluetooth(pressed);
             }
-            else if(viewId == colorButtonTwo.getId())
+            else if(viewId == orange.getId())
             {
                 c.setCardBackgroundColor(Color.parseColor("#80ff6100"));
+                writeToBluetooth(pressed);
             }
-            else if(viewId ==  colorButtonThree.getId())
-            {
-                c.setCardBackgroundColor(Color.parseColor("#80fc0014"));
-            }
-            else if(viewId == colorButtonFour.getId())
+            else if(viewId ==  yellow.getId())
             {
                 c.setCardBackgroundColor(Color.parseColor("#80ffaa00"));
+                writeToBluetooth(pressed);
+            }
+            else if(viewId == red.getId())
+            {
+                c.setCardBackgroundColor(Color.parseColor("#80fc0014"));
+                writeToBluetooth(pressed);
             }
 
-            writeToBluetooth(instructionDown);
+
         }
             else if (event.getAction() == MotionEvent.ACTION_UP) {
-
 
             if(viewId == R.id.upMotion|| viewId ==R.id.downMotion || viewId ==R.id.leftMotion || viewId == R.id.rightMotion){
             c.setCardBackgroundColor(Color.parseColor("#353535"));
             }
-            else if(viewId == colorButtonOne.getId())
+            else if(viewId == blue.getId())
             {
                 c.setCardBackgroundColor(Color.parseColor("#0064ab"));
+                writeToBluetooth(released);
             }
-            else if(viewId == colorButtonTwo.getId())
+            else if(viewId == orange.getId())
             {
                 c.setCardBackgroundColor(Color.parseColor("#ff6100"));
+                writeToBluetooth(released);
             }
-            else if(viewId ==  colorButtonThree.getId())
-            {
-                c.setCardBackgroundColor(Color.parseColor("#fc0014"));
-            }
-            else if(viewId == colorButtonFour.getId())
+            else if(viewId ==  yellow.getId())
             {
                 c.setCardBackgroundColor(Color.parseColor("#ffaa00"));
+                writeToBluetooth(released);
+            }
+            else if(viewId == red.getId())
+            {
+                c.setCardBackgroundColor(Color.parseColor("#fc0014"));
+                writeToBluetooth(released);
             }
 
-            writeToBluetooth(instructionUp);
+
         }
     }
         else {
@@ -364,10 +280,7 @@ public class ControllerActivity extends AppCompatActivity implements View.OnTouc
     @Override
     protected void onResume() {
         super.onResume();
-        blueText.setText(sharedPreferences.getString(Constants.button1Pressed,""));
-        orangeText.setText(sharedPreferences.getString(Constants.button2Pressed,""));
-        yellowText.setText(sharedPreferences.getString(Constants.button3Pressed,""));
-        redText.setText(sharedPreferences.getString(Constants.button4Pressed,""));
+       setTextViews();
 
     }
 
@@ -391,10 +304,10 @@ public class ControllerActivity extends AppCompatActivity implements View.OnTouc
         leftImg.setImageResource(R.drawable.ic_keyboard_arrow_left_black_24dp);
         edit = findViewById(R.id.edit);
         write = findViewById(R.id.write);
-        colorButtonOne = findViewById(R.id.custom1);
-        colorButtonTwo = findViewById(R.id.custom2);
-        colorButtonThree = findViewById(R.id.custom3);
-        colorButtonFour = findViewById(R.id.custom4);
+        blue = findViewById(R.id.blue);
+        orange = findViewById(R.id.orange);
+        yellow = findViewById(R.id.yellow);
+        red = findViewById(R.id.red);
         sharedPreferences = getSharedPreferences(RemoteSharedPreference, Context.MODE_PRIVATE);
         up = findViewById(R.id.upMotion);
         down = findViewById(R.id.downMotion);
@@ -410,10 +323,10 @@ public class ControllerActivity extends AppCompatActivity implements View.OnTouc
         down.setOnTouchListener(this);
         right.setOnTouchListener(this);
         left.setOnTouchListener(this);
-        colorButtonOne.setOnTouchListener(this);
-        colorButtonTwo.setOnTouchListener(this);
-        colorButtonThree.setOnTouchListener(this);
-        colorButtonFour.setOnTouchListener(this);
+        blue.setOnTouchListener(this);
+        orange.setOnTouchListener(this);
+        yellow.setOnTouchListener(this);
+        red.setOnTouchListener(this);
         status = findViewById(R.id.status);
         statusCard = findViewById(R.id.statusCard);
         back = findViewById(R.id.back);
@@ -425,6 +338,14 @@ public class ControllerActivity extends AppCompatActivity implements View.OnTouc
         arrayList = new ArrayList<>();
         aSwitch = findViewById(R.id.aSwitch);
 
+    }
+
+    void setTextViews()
+    {
+        blueText.setText(sharedPreferences.getString(Constants.bluePressed,""));
+        orangeText.setText(sharedPreferences.getString(Constants.orangePressed,""));
+        yellowText.setText(sharedPreferences.getString(Constants.yellowPress,""));
+        redText.setText(sharedPreferences.getString(Constants.redPressed,""));
     }
 
     @Override

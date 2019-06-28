@@ -7,7 +7,7 @@ public class ConfigClass {
     DataStringClass yellowButton;
     DataStringClass orangeButton;
 
-    public ConfigClass(String remoteName, DataStringClass redButton, DataStringClass blueButton, DataStringClass yellowButton, DataStringClass orangeButton) {
+    public ConfigClass(String remoteName, DataStringClass blueButton, DataStringClass orangeButton, DataStringClass yellowButton, DataStringClass redButton) {
         this.remoteName = remoteName;
         this.redButton = redButton;
         this.blueButton = blueButton;

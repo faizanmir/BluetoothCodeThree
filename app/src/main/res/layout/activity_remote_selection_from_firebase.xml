@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#455A64"
+    tools:context=".RemoteSelectionFromFirebase">
+    <RelativeLayout
+        android:id="@+id/firebase"
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        >
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="20dp"
+            android:text="Select your Remote"
+            android:textColor="@android:color/white"
+            android:textSize="30sp"/>
+
+    </RelativeLayout>
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/firebase"
+        android:layout_alignParentEnd="true"
+        android:layout_margin="15dp"
+        android:background="@drawable/signup"
+        android:onClick="goToRemote"
+        android:padding="20dp"
+        android:text="Go to remote"
+        android:textColor="@android:color/white"
+        />
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/firebaseRecyclerview"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_margin="20dp"
+        >
+    </android.support.v7.widget.RecyclerView>
+
+
+</RelativeLayout>

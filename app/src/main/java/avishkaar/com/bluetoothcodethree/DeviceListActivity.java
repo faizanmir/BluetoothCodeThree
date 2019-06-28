@@ -9,12 +9,12 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -30,6 +30,7 @@ import java.util.Set;
 import java.util.UUID;
 
 import avishkaar.com.bluetoothcodethree.Adapters.DeviceAdapter;
+import avishkaar.com.bluetoothcodethree.Interfaces.bluetoothInterface;
 
 public class DeviceListActivity extends AppCompatActivity {
     private BluetoothAdapter bluetoothAdapter;
@@ -48,7 +49,7 @@ public class DeviceListActivity extends AppCompatActivity {
     IntentFilter filter;
     DeviceAdapter newDeviceAdapter;
     RecyclerView.LayoutManager newDeviceLayoutManager;
-     bluetoothInterface bluetoothInterface;
+     avishkaar.com.bluetoothcodethree.Interfaces.bluetoothInterface bluetoothInterface;
      DatabaseReference firebaseReference ;
 
     @Override
@@ -78,7 +79,7 @@ public class DeviceListActivity extends AppCompatActivity {
                 bluetoothAdapter.cancelDiscovery();
                 EXTRA_DATA = deviceAddress;
                 DeviceListActivity.this.bluetoothDevice = bluetoothDevice;
-                Intent intent = new Intent(DeviceListActivity.this, ControllerActivity.class);
+                Intent intent = new Intent(DeviceListActivity.this, RemoteSelectionFromFirebase.class);
                 intent.putExtra(DEVICE_EXTRA,deviceAddress);
                 startActivity(intent);
             }

@@ -75,24 +75,24 @@ public class CustomCommandDialog extends DialogFragment {
             public void onClick(View v) {
                 if(flag==1)
                 {
-                    edit.putString(Constants.button1Pressed,buttonPress.getText().toString()).apply();
-                    edit.putString(Constants.button1Released,buttonRelease.getText().toString()).apply();
+                    edit.putString(Constants.bluePressed,buttonPress.getText().toString()).apply();
+                    edit.putString(Constants.blueRelease,buttonRelease.getText().toString()).apply();
 
                 }
                 else if (flag ==2)
                 {
-                    edit.putString(Constants.button2Pressed,buttonPress.getText().toString()).apply();
-                    edit.putString(Constants.button2Released,buttonRelease.getText().toString()).apply();
+                    edit.putString(Constants.orangePressed,buttonPress.getText().toString()).apply();
+                    edit.putString(Constants.orangeRelease,buttonRelease.getText().toString()).apply();
                 }
                 else if (flag==3)
                 {
-                    edit.putString(Constants.button4Pressed,buttonPress.getText().toString()).apply();
-                    edit.putString(Constants.button4Released,buttonRelease.getText().toString()).apply();
+                    edit.putString(Constants.yellowPress,buttonPress.getText().toString()).apply();
+                    edit.putString(Constants.yellowReleased,buttonRelease.getText().toString()).apply();
                 }
                 else if(flag ==4)
                 {
-                    edit.putString(Constants.button3Pressed,buttonPress.getText().toString()).apply();
-                    edit.putString(Constants.button3Released,buttonRelease.getText().toString()).apply();
+                    edit.putString(Constants.redPressed,buttonPress.getText().toString()).apply();
+                    edit.putString(Constants.redReleased,buttonRelease.getText().toString()).apply();
                 }
                 refer.triggerChange();
                 dismiss();
@@ -104,26 +104,26 @@ public class CustomCommandDialog extends DialogFragment {
     void setTextViews()
     {
         if(flag==1)
-        {   buttonPress.setText(sharedPreferences.getString(Constants.button1Pressed,""));
-            buttonRelease.setText(sharedPreferences.getString(Constants.button1Released,""));
+        {   buttonPress.setText(sharedPreferences.getString(Constants.bluePressed,""));
+            buttonRelease.setText(sharedPreferences.getString(Constants.blueRelease,""));
             identifier.setCardBackgroundColor(Color.parseColor("#0064ab"));
 
         }
         else if (flag ==2)
-        {   buttonPress.setText(sharedPreferences.getString(Constants.button2Pressed,""));
-            buttonRelease.setText(sharedPreferences.getString(Constants.button2Released,""));
+        {   buttonPress.setText(sharedPreferences.getString(Constants.orangePressed,""));
+            buttonRelease.setText(sharedPreferences.getString(Constants.orangeRelease,""));
             identifier.setCardBackgroundColor(Color.parseColor("#ff6100"));
         }
         else if (flag==3)
-        {   buttonPress.setText(sharedPreferences.getString(Constants.button4Pressed,""));
-            buttonRelease.setText(sharedPreferences.getString(Constants.button4Released,""));
-            identifier.setCardBackgroundColor(Color.parseColor("#fc0014"));
+        {   buttonPress.setText(sharedPreferences.getString(Constants.yellowPress,""));
+            buttonRelease.setText(sharedPreferences.getString(Constants.yellowReleased,""));
+            identifier.setCardBackgroundColor(Color.parseColor("#ffaa00"));
 
         }
         else if(flag ==4)
-        {   buttonRelease.setText(sharedPreferences.getString(Constants.button3Released,""));
-            buttonPress.setText(sharedPreferences.getString(Constants.button3Pressed,""));
-            identifier.setCardBackgroundColor(Color.parseColor("#ffaa00"));
+        {   buttonRelease.setText(sharedPreferences.getString(Constants.redReleased,""));
+            buttonPress.setText(sharedPreferences.getString(Constants.redPressed,""));
+            identifier.setCardBackgroundColor(Color.parseColor("#fc0014"));
 
         }
     }

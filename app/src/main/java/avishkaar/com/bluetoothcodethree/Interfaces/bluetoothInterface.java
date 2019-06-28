@@ -1,4 +1,4 @@
-package avishkaar.com.bluetoothcodethree;
+package avishkaar.com.bluetoothcodethree.Interfaces;
 
 import android.bluetooth.BluetoothDevice;
 

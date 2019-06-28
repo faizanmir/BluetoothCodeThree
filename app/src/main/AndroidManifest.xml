@@ -15,7 +15,13 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
-        <activity android:name=".SplashActivity"
+        <activity android:name=".SignUpActivity"
+            android:screenOrientation="landscape"/>
+        <activity
+            android:name=".RemoteSelectionFromFirebase"
+            android:screenOrientation="landscape" />
+        <activity
+            android:name=".SplashActivity"
             android:screenOrientation="landscape">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -31,9 +37,7 @@
             android:screenOrientation="landscape" />
         <activity
             android:name=".DeviceListActivity"
-            android:screenOrientation="landscape">
-
-        </activity>
+            android:screenOrientation="landscape" />
     </application>
 
 </manifest>

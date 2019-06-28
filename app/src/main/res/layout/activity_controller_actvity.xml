@@ -204,7 +204,7 @@
             android:layout_gravity="center_horizontal|top"
             app:cardCornerRadius="37dp"
             android:layout_margin="20dp"
-            android:id="@+id/custom1"
+            android:id="@+id/blue"
             app:cardBackgroundColor="#0064ab"
             >
             <TextView
@@ -227,7 +227,7 @@
             app:cardCornerRadius="37dp"
             android:layout_gravity="center_vertical|end"
             android:layout_margin="20dp"
-            android:id="@+id/custom2"
+            android:id="@+id/orange"
             app:cardBackgroundColor="#ff6100"
             >
             <TextView
@@ -247,7 +247,7 @@
             android:layout_gravity="center_vertical|start"
             app:cardCornerRadius="37dp"
             android:layout_margin="20dp"
-            android:id="@+id/custom3"
+            android:id="@+id/red"
             app:cardBackgroundColor="#fc0014"
             >
             <TextView
@@ -268,7 +268,7 @@
             android:layout_gravity="center_horizontal|bottom"
             app:cardCornerRadius="37dp"
             android:layout_margin="20dp"
-            android:id="@+id/custom4"
+            android:id="@+id/yellow"
             app:cardBackgroundColor="#ffaa00"
 
             >

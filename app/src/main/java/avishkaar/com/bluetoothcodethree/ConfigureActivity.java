@@ -1,40 +1,84 @@
 package avishkaar.com.bluetoothcodethree;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.TextView;
+
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
+import avishkaar.com.bluetoothcodethree.ModelClasses.ConfigClass;
+import avishkaar.com.bluetoothcodethree.ModelClasses.DataStringClass;
+import avishkaar.com.bluetoothcodethree.ModelClasses.RemoteModelClass;
 
 public class ConfigureActivity extends AppCompatActivity implements CustomCommandDialog.dataFromDialog {
     SharedPreferences sharedPreferences;
-    CardView colorButtonOne,colorButtonTwo,colorButtonThree,colorButtonFour,done;
+    CardView blue,orange,yellow,red,done;
     TextView blueText,redText,orangeText,yellowText;
+    String remoteName;
+    LayoutInflater layoutInflater;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_configure);
         sharedPreferences = getSharedPreferences(ControllerActivity.RemoteSharedPreference, Context.MODE_PRIVATE);
-        colorButtonOne = findViewById(R.id.custom1);//blue
-        colorButtonTwo = findViewById(R.id.custom2);//orange
-        colorButtonThree = findViewById(R.id.custom3);//red
-        colorButtonFour = findViewById(R.id.custom4);//yellow
+        blue = findViewById(R.id.blue);//blue
+        orange = findViewById(R.id.orange);//orange
+        yellow = findViewById(R.id.yellow);//red
+        red= findViewById(R.id.red);//yellow
         redText = findViewById(R.id.redText);
         blueText = findViewById(R.id.blueText);
         yellowText = findViewById(R.id.yellowText);
         orangeText = findViewById(R.id.orangeText);
         done = findViewById(R.id.done);
+        final FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+        layoutInflater = LayoutInflater.from(this);
+        final View alertView = layoutInflater.inflate(R.layout.alert_dialog_layout,null);
+        final AlertDialog.Builder alertBuilder = new AlertDialog.Builder(this);
+        final EditText userInput = (EditText) alertView
+                .findViewById(R.id.editTextDialogUserInput);
+
+        final DatabaseReference firebaseDatabase = FirebaseDatabase.getInstance().getReference();
         triggerChange();
+
+
         done.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                finish();
+                alertBuilder.setView(alertView).setPositiveButton("Save", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        remoteName = userInput.getText().toString();
+                        firebaseDatabase.child(firebaseUser.getUid()).child(remoteName).setValue(new RemoteModelClass(new ConfigClass(
+                                remoteName
+                                ,new DataStringClass(sharedPreferences.getString(Constants.bluePressed,""),sharedPreferences.getString(Constants.blueRelease,""))
+                                ,new DataStringClass(sharedPreferences.getString(Constants.orangePressed,""),sharedPreferences.getString(Constants.orangeRelease,""))
+                                ,new DataStringClass(sharedPreferences.getString(Constants.yellowPress,""),sharedPreferences.getString(Constants.yellowReleased,""))
+                                ,new DataStringClass(sharedPreferences.getString(Constants.redPressed,""),sharedPreferences.getString(Constants.redReleased,""))
+                        )));
+                        finish();
+                    }
+                }).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
+                    }
+                }).show();
+
             }
         });
 
-        colorButtonOne.setOnClickListener(new View.OnClickListener() {
+        blue.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 CustomCommandDialog dialog = new CustomCommandDialog();
@@ -43,7 +87,7 @@ public class ConfigureActivity extends AppCompatActivity implements CustomComman
             }
         });
 
-        colorButtonTwo.setOnClickListener(new View.OnClickListener() {
+        orange.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 CustomCommandDialog dialog = new CustomCommandDialog();
@@ -51,7 +95,7 @@ public class ConfigureActivity extends AppCompatActivity implements CustomComman
                 dialog.show(getSupportFragmentManager(),"");
             }
         });
-        colorButtonThree.setOnClickListener(new View.OnClickListener() {
+        yellow.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 CustomCommandDialog dialog = new CustomCommandDialog();
@@ -59,7 +103,7 @@ public class ConfigureActivity extends AppCompatActivity implements CustomComman
                 dialog.show(getSupportFragmentManager(),"");
             }
         });
-        colorButtonFour.setOnClickListener(new View.OnClickListener() {
+        red.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 CustomCommandDialog dialog = new CustomCommandDialog();
@@ -96,9 +140,9 @@ public class ConfigureActivity extends AppCompatActivity implements CustomComman
 
     @Override
     public void triggerChange() {
-        blueText.setText(sharedPreferences.getString(Constants.button1Pressed,""));
-        orangeText.setText(sharedPreferences.getString(Constants.button2Pressed,""));
-        yellowText.setText(sharedPreferences.getString(Constants.button3Pressed,""));
-        redText.setText(sharedPreferences.getString(Constants.button4Pressed,""));
+        blueText.setText(sharedPreferences.getString(Constants.bluePressed,""));
+        orangeText.setText(sharedPreferences.getString(Constants.orangePressed,""));
+        yellowText.setText(sharedPreferences.getString(Constants.yellowPress,""));
+        redText.setText(sharedPreferences.getString(Constants.redPressed,""));
     }
 }
