@@ -3,12 +3,15 @@ package avishkaar.com.bluetoothcodethree;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
 import android.view.View;
 
@@ -30,13 +33,12 @@ public class RemoteSelectionFromFirebase extends AppCompatActivity {
     private static final String TAG = "RemoteSelectionFromFire";
 DatabaseReference firebaseDatabase;
 ArrayList<RemoteModelClass> savedRemoteArrayList;
-Intent intent;
 String deviceAddress;
 FirebaseAdapter firebaseAdapter;
-Bundle bundle;
 dataPassToSelectionActivity ref;
 SharedPreferences sharedPreferences;
 FirebaseUser firebaseUser;
+    RecyclerView firebaseRecyclerview;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,7 +77,6 @@ FirebaseUser firebaseUser;
 
                 sharedPreferences.edit().putString(Constants.yellowReleased,yellowOnRelease).apply();
                 sharedPreferences.edit().putString(Constants.yellowPress,yellowOnPressed).apply();
-                Log.e(TAG, "passDataToSelectionActivity:On press release SP check " + sharedPreferences.getAll() );
 
                 Intent intent = new Intent(RemoteSelectionFromFirebase.this,ControllerActivity.class);
                 intent.putExtra(DeviceListActivity.DEVICE_EXTRA,deviceAddress);
@@ -83,7 +84,45 @@ FirebaseUser firebaseUser;
                 startActivity(intent);
             }
         };
+
+
         init();
+        ItemTouchHelper.SimpleCallback simpleCallback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.UP | ItemTouchHelper.DOWN) {
+            @Override
+            public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder viewHolder1) {
+                return false;
+            }
+
+            @Override
+            public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int i) {
+                final int position = viewHolder.getAdapterPosition();
+                Snackbar.make(findViewById(android.R.id.content), "Delete Remote ?", Snackbar.LENGTH_INDEFINITE)
+                        .setAction("Delete", new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                try {
+                                    firebaseDatabase.child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child(savedRemoteArrayList.get(position).getConfig().getRemoteName()).removeValue();
+                                } catch (NullPointerException e) {
+                                    e.printStackTrace();
+                                }
+                                savedRemoteArrayList.remove(position);
+                                firebaseAdapter.notifyDataSetChanged();
+                            }
+                        })
+                        .setActionTextColor(Color.parseColor("#FFFFFF"))
+                        .show();
+
+
+            }
+        };
+
+        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(simpleCallback);
+
+        itemTouchHelper.attachToRecyclerView(firebaseRecyclerview);
+
+
+
+
 
 
 
@@ -91,6 +130,7 @@ FirebaseUser firebaseUser;
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
                 RemoteModelClass dataFromFireBase =  dataSnapshot.getValue(RemoteModelClass.class);
+
                 savedRemoteArrayList.add(dataFromFireBase);
                 firebaseAdapter.notifyDataSetChanged();
             }
@@ -122,12 +162,13 @@ FirebaseUser firebaseUser;
     {
         firebaseDatabase = FirebaseDatabase.getInstance().getReference();
         savedRemoteArrayList = new ArrayList<>();
-        RecyclerView firebaseRecyclerview = findViewById(R.id.firebaseRecyclerview);
-        firebaseAdapter = new FirebaseAdapter(savedRemoteArrayList,ref);
+        firebaseRecyclerview = findViewById(R.id.firebaseRecyclerview);
+        firebaseAdapter = new FirebaseAdapter(savedRemoteArrayList, ref, firebaseDatabase);
         RecyclerView.LayoutManager layoutManager  = new LinearLayoutManager(this,RecyclerView.HORIZONTAL,false);
         firebaseRecyclerview.setAdapter(firebaseAdapter);
         firebaseRecyclerview.setLayoutManager(layoutManager);
         firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+
         if (firebaseUser != null) {
             Log.e(TAG, "init: " + firebaseUser.getEmail() );
         }

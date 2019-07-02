@@ -11,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -45,7 +46,7 @@ public class ConfigureActivity extends AppCompatActivity implements CustomComman
         layoutInflater = LayoutInflater.from(this);
         final View alertView = layoutInflater.inflate(R.layout.alert_dialog_layout,null);
         final AlertDialog.Builder alertBuilder = new AlertDialog.Builder(this);
-        final EditText userInput = (EditText) alertView
+        final EditText userInput = alertView
                 .findViewById(R.id.editTextDialogUserInput);
 
         final DatabaseReference firebaseDatabase = FirebaseDatabase.getInstance().getReference();
@@ -55,27 +56,41 @@ public class ConfigureActivity extends AppCompatActivity implements CustomComman
         done.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                alertBuilder.setView(alertView).setPositiveButton("Save", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        remoteName = userInput.getText().toString();
-                        firebaseDatabase.child(firebaseUser.getUid()).child(remoteName).setValue(new RemoteModelClass(new ConfigClass(
-                                remoteName
-                                ,new DataStringClass(sharedPreferences.getString(Constants.bluePressed,""),sharedPreferences.getString(Constants.blueRelease,""))
-                                ,new DataStringClass(sharedPreferences.getString(Constants.orangePressed,""),sharedPreferences.getString(Constants.orangeRelease,""))
-                                ,new DataStringClass(sharedPreferences.getString(Constants.yellowPress,""),sharedPreferences.getString(Constants.yellowReleased,""))
-                                ,new DataStringClass(sharedPreferences.getString(Constants.redPressed,""),sharedPreferences.getString(Constants.redReleased,""))
-                        )));
-                        finish();
-                    }
-                }).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.cancel();
-                    }
-                }).show();
+                try {
+
+                    alertBuilder.setView(alertView).setPositiveButton("Save", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            remoteName = userInput.getText().toString();
+                            if (remoteName.length() > 0) {
+                                firebaseDatabase.child(firebaseUser.getUid()).child(remoteName).setValue(new RemoteModelClass(new ConfigClass(
+                                        remoteName
+                                        , new DataStringClass(sharedPreferences.getString(Constants.bluePressed, ""), sharedPreferences.getString(Constants.blueRelease, ""))
+                                        , new DataStringClass(sharedPreferences.getString(Constants.orangePressed, ""), sharedPreferences.getString(Constants.orangeRelease, ""))
+                                        , new DataStringClass(sharedPreferences.getString(Constants.yellowPress, ""), sharedPreferences.getString(Constants.yellowReleased, ""))
+                                        , new DataStringClass(sharedPreferences.getString(Constants.redPressed, ""), sharedPreferences.getString(Constants.redReleased, ""))
+                                )));
+                                finish();
+                            } else {
+                                Toast.makeText(ConfigureActivity.this, "Cant have a blank name ", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+
+                    }).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.cancel();
+                            finish();
+                        }
+                    }).create().show();
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    finish();
+                }
 
             }
+
         });
 
         blue.setOnClickListener(new View.OnClickListener() {

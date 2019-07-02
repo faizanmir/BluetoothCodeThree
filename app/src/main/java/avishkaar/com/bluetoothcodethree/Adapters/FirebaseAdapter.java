@@ -1,11 +1,16 @@
 package avishkaar.com.bluetoothcodethree.Adapters;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DatabaseReference;
 
 import java.util.ArrayList;
 
@@ -16,9 +21,12 @@ import avishkaar.com.bluetoothcodethree.R;
 public class FirebaseAdapter extends  RecyclerView.Adapter<FirebaseAdapter.FirebaseViewHolder>{
     ArrayList<RemoteModelClass> remoteModelClassArrayList;
     dataPassToSelectionActivity ref;
-    public FirebaseAdapter(ArrayList<RemoteModelClass> remoteModelClassArrayList,dataPassToSelectionActivity ref) {
+    DatabaseReference firebaseDatabase;
+
+    public FirebaseAdapter(ArrayList<RemoteModelClass> remoteModelClassArrayList, dataPassToSelectionActivity ref, DatabaseReference firebaseDatabase) {
         this.remoteModelClassArrayList = remoteModelClassArrayList;
         this.ref=ref;
+        this.firebaseDatabase = firebaseDatabase;
     }
 
     @NonNull
@@ -28,12 +36,43 @@ public class FirebaseAdapter extends  RecyclerView.Adapter<FirebaseAdapter.Fireb
     }
 
     @Override
-    public void onBindViewHolder(@NonNull FirebaseViewHolder firebaseViewHolder, final int i) {
-        firebaseViewHolder.textView.setText(remoteModelClassArrayList.get(i).getConfig().getRemoteName());
+    public void onBindViewHolder(@NonNull final FirebaseViewHolder firebaseViewHolder, final int i) {
+        try {
+            firebaseViewHolder.textView.setText(remoteModelClassArrayList.get(i).getConfig().getRemoteName());
+        } catch (NullPointerException e) {
+
+        }
         firebaseViewHolder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 ref.passDataToSelectionActivity(remoteModelClassArrayList.get(i));
+            }
+        });
+        firebaseViewHolder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                try {
+                    new AlertDialog.Builder(firebaseViewHolder.itemView.getContext()).setMessage("Do you want to delete this configuration?").setTitle("Delete Configuration").setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            if (FirebaseAuth.getInstance().getCurrentUser().getUid().length() > 0) {
+                                firebaseDatabase.child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child(remoteModelClassArrayList.get(firebaseViewHolder.getAdapterPosition()).getConfig().getRemoteName()).removeValue();
+                                remoteModelClassArrayList.remove(remoteModelClassArrayList.remove(firebaseViewHolder.getAdapterPosition()));
+                                notifyDataSetChanged();
+                            }
+                        }
+                    }).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.cancel();
+                        }
+                    }).create().show();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+
+                return true;
             }
         });
     }

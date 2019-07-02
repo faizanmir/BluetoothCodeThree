@@ -103,16 +103,16 @@ public class ControllerActivity extends AppCompatActivity implements View.OnTouc
         switch (v.getId())
         {
             case(R.id.upMotion):
-                actionDetection(event, "X", "F",R.id.upMotion);
+                actionDetection(event, "F", "X", R.id.upMotion);
                 break;
             case (R.id.downMotion):
-                actionDetection(event, "X", "B",R.id.downMotion);
+                actionDetection(event, "B", "X", R.id.downMotion);
                 break;
             case(R.id.leftMotion):
-                actionDetection(event, "X", "L",R.id.leftMotion);
+                actionDetection(event, "L", "X", R.id.leftMotion);
                 break;
             case(R.id.rightMotion):
-                actionDetection(event, "X", "R",R.id.rightMotion);
+                actionDetection(event, "R", "X", R.id.rightMotion);
                 break;
             case(R.id.blue):
                 actionDetection(event,sharedPreferences.getString(Constants.bluePressed,""),sharedPreferences.getString(Constants.blueRelease,""),R.id.blue);
@@ -217,6 +217,7 @@ public class ControllerActivity extends AppCompatActivity implements View.OnTouc
             if (event.getAction() == MotionEvent.ACTION_DOWN) {
             if(viewId == R.id.upMotion|| viewId ==R.id.downMotion || viewId ==R.id.leftMotion || viewId == R.id.rightMotion) {
                 c.setCardBackgroundColor(android.graphics.Color.parseColor("#000000"));
+                writeToBluetooth(pressed);
             }
 
             else if(viewId == blue.getId())
@@ -246,6 +247,7 @@ public class ControllerActivity extends AppCompatActivity implements View.OnTouc
 
             if(viewId == R.id.upMotion|| viewId ==R.id.downMotion || viewId ==R.id.leftMotion || viewId == R.id.rightMotion){
             c.setCardBackgroundColor(Color.parseColor("#353535"));
+                writeToBluetooth(released);
             }
             else if(viewId == blue.getId())
             {

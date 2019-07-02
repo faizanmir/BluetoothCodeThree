@@ -155,7 +155,6 @@ public class DeviceListActivity extends AppCompatActivity {
         });
 
 
-
     }
 
 
