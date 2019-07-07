@@ -75,7 +75,7 @@ public class DeviceListActivity extends AppCompatActivity {
         bluetoothInterface= new bluetoothInterface() {
             @Override
             public void bluetoothAddress(String deviceName, String deviceAddress, BluetoothDevice bluetoothDevice) {
-                Log.e(TAG, "bluetoothAddress: InterfaceTriggered" + "    " + "DeviceReceived : " + deviceName);
+                Log.e(TAG, "bluetoothAddress: InterfaceTriggered" + "    " + "DeviceReceived : " + deviceName + "dev Address" + deviceAddress);
                 bluetoothAdapter.cancelDiscovery();
                 EXTRA_DATA = deviceAddress;
                 DeviceListActivity.this.bluetoothDevice = bluetoothDevice;

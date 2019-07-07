@@ -8,6 +8,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -46,7 +47,11 @@ public class SignUpActivity extends AppCompatActivity {
             public void onClick(View v) {
                 emailAddress = email.getText().toString();
                 userPassword =  password.getText().toString();
-                sendToFirebase(emailAddress,userPassword);
+                if (emailAddress.length() > 0 && userPassword.length() > 0) {
+                    sendToFirebase(emailAddress, userPassword);
+                } else {
+                    Toast.makeText(SignUpActivity.this, "Please enter e-mail and Password", Toast.LENGTH_LONG).show();
+                }
             }
         });
 

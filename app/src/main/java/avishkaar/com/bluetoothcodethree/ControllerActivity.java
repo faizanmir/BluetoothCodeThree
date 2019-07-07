@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothManager;
+import android.bluetooth.BluetoothServerSocket;
 import android.bluetooth.BluetoothSocket;
 import android.content.Context;
 import android.content.Intent;
@@ -11,6 +12,8 @@ import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.SystemClock;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
 import android.util.Log;
@@ -29,6 +32,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 
@@ -38,6 +42,7 @@ import static avishkaar.com.bluetoothcodethree.DeviceListActivity.UUIDForARDUINO
 
 public class ControllerActivity extends AppCompatActivity implements View.OnTouchListener{
     BluetoothAdapter bluetoothAdapter;
+    SendReceiveThread sendReceiveThread;
     String deviceAddress;
     BluetoothSocket socket;
     BluetoothDevice bluetoothDevice;
@@ -57,6 +62,7 @@ public class ControllerActivity extends AppCompatActivity implements View.OnTouc
     DatabaseReference firebaseDatabase;
     ArrayList<RemoteModelClass> arrayList;
     Switch aSwitch;
+    Handler handler;
     @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -130,8 +136,81 @@ public class ControllerActivity extends AppCompatActivity implements View.OnTouc
         }
         return true;
     }
+
+    void writeToBluetooth(String instruction) {
+
+        if (socket != null) {
+
+//                socket.getOutputStream().write(instruction.getBytes());
+//                socket.getOutputStream().flush();
+            sendReceiveThread.sendToDevice(instruction);
+            // Log.e(TAG, "writeToBluetooth: " +  "  " + "Command Written"  + instruction );
+
+        }
+
+
+    }
+
+    @SuppressLint("ClickableViewAccessibility")
+    void init() {
+        bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+
+        setContentView(R.layout.activity_controller_actvity);
+        progressBar = findViewById(R.id.barForProgress);
+        Intent intent = getIntent();
+        deviceAddress = intent.getStringExtra(DeviceListActivity.DEVICE_EXTRA);
+        Log.e(TAG, "init: " + "device Address" + deviceAddress);
+        bluetoothDevice = bluetoothAdapter.getRemoteDevice(deviceAddress);
+        upImg = findViewById(R.id.upImg);
+        dwnImg = findViewById(R.id.downImg);
+        leftImg = findViewById(R.id.leftImg);
+        rightImg = findViewById(R.id.rightImg);
+        upImg.setImageResource(R.drawable.ic_keyboard_arrow_up_black_24dp);
+        dwnImg.setImageResource(R.drawable.ic_keyboard_arrow_down_black_24dp);
+        rightImg.setImageResource(R.drawable.ic_keyboard_arrow_right_black_24dp);
+        leftImg.setImageResource(R.drawable.ic_keyboard_arrow_left_black_24dp);
+        edit = findViewById(R.id.edit);
+        write = findViewById(R.id.write);
+        blue = findViewById(R.id.blue);
+        orange = findViewById(R.id.orange);
+        yellow = findViewById(R.id.yellow);
+        red = findViewById(R.id.red);
+        sharedPreferences = getSharedPreferences(RemoteSharedPreference, Context.MODE_PRIVATE);
+        up = findViewById(R.id.upMotion);
+        down = findViewById(R.id.downMotion);
+        left = findViewById(R.id.leftMotion);
+        right = findViewById(R.id.rightMotion);
+        redText = findViewById(R.id.redText);
+        blueText = findViewById(R.id.blueText);
+        yellowText = findViewById(R.id.yellowText);
+        orangeText = findViewById(R.id.orangeText);
+        configureCard = findViewById(R.id.configureItem);
+        new ConnectionThread(ControllerActivity.this).execute();
+        new ServerClass().start();
+        up.setOnTouchListener(this);
+        down.setOnTouchListener(this);
+        right.setOnTouchListener(this);
+        left.setOnTouchListener(this);
+        blue.setOnTouchListener(this);
+        orange.setOnTouchListener(this);
+        yellow.setOnTouchListener(this);
+        red.setOnTouchListener(this);
+        status = findViewById(R.id.status);
+        statusCard = findViewById(R.id.statusCard);
+        back = findViewById(R.id.back);
+        status.setText("Disconnected");
+        bluetoothManager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
+        overlay = findViewById(R.id.overlay);
+        connectingCard = findViewById(R.id.connectingCard);
+        firebaseDatabase = FirebaseDatabase.getInstance().getReference();
+        arrayList = new ArrayList<>();
+        aSwitch = findViewById(R.id.aSwitch);
+        handler = new Handler();
+
+    }
+
     //*******************************************************************************************************************
-    static class ConnectionThread extends AsyncTask<Void, Void, Void>
+    class ConnectionThread extends AsyncTask<Void, Void, Void>
     {
         WeakReference<ControllerActivity> weakReference;
 
@@ -144,8 +223,8 @@ public class ControllerActivity extends AppCompatActivity implements View.OnTouc
             try {
                 ControllerActivity ref = weakReference.get();
                 ref.socket = ref.bluetoothDevice.createInsecureRfcommSocketToServiceRecord(UUIDForARDUINO);
-                ref.bluetoothAdapter.cancelDiscovery();
                 ref.socket.connect();
+                sendReceiveThread = new SendReceiveThread(socket);
                 Log.e(TAG, "doInBackground: " +  "Connection has been established..." );
                 Log.e(TAG, "doInBackground: " + "Is Socket Connected  ?  " + ref.socket.isConnected());
             } catch (IOException e) {
@@ -167,6 +246,8 @@ public class ControllerActivity extends AppCompatActivity implements View.OnTouc
 
         }
     }
+
+
     @Override
     public void onWindowFocusChanged(boolean hasFocus) {
         super.onWindowFocusChanged(hasFocus);
@@ -191,21 +272,39 @@ public class ControllerActivity extends AppCompatActivity implements View.OnTouc
                         | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
                         | View.SYSTEM_UI_FLAG_FULLSCREEN);
     }
-    void writeToBluetooth(String instruction)
+
+    private class ServerClass extends Thread
     {
-        Log.e(TAG, "writeToBluetooth: " + instruction );
-        if(socket!=null)
-        {
+        private BluetoothServerSocket serverSocket;
+
+        public ServerClass() {
             try {
-                socket.getOutputStream().write(instruction.getBytes());
-                socket.getOutputStream().flush();
-               // Log.e(TAG, "writeToBluetooth: " +  "  " + "Command Written"  + instruction );
+                serverSocket = bluetoothAdapter.listenUsingRfcommWithServiceRecord("Bt3", UUIDForARDUINO);
             } catch (IOException e) {
-               // e.printStackTrace();
+                e.printStackTrace();
             }
         }
 
+        public void run() {
+            BluetoothSocket socket = null;
 
+            while (socket == null) {
+                try {
+                    Log.e(TAG, "run: " + "Accept Thread running...");
+                    socket = serverSocket.accept();
+                } catch (IOException e) {
+                    e.printStackTrace();
+
+                }
+
+                if (socket != null) {
+                    Log.e(TAG, "run: " + "Socket Acquired ...");
+                    sendReceiveThread = new SendReceiveThread(socket);
+                    sendReceiveThread.start();
+                    break;
+                }
+            }
+        }
     }
 
     void actionDetection(MotionEvent event,String pressed,String released,int viewId)
@@ -286,59 +385,42 @@ public class ControllerActivity extends AppCompatActivity implements View.OnTouc
 
     }
 
+    class SendReceiveThread extends Thread {
+        BluetoothSocket bluetoothSocket;
+        InputStream inputStream = null;
 
-    @SuppressLint("ClickableViewAccessibility")
-    void init() {
-        bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+        SendReceiveThread(BluetoothSocket bluetoothSocket) {
+            this.bluetoothSocket = bluetoothSocket;
+        }
 
-        setContentView(R.layout.activity_controller_actvity);
-        progressBar = findViewById(R.id.barForProgress);
-        Intent intent = getIntent();
-        deviceAddress = intent.getStringExtra(DeviceListActivity.DEVICE_EXTRA);
-        bluetoothDevice = bluetoothAdapter.getRemoteDevice(deviceAddress);
-        upImg = findViewById(R.id.upImg);
-        dwnImg = findViewById(R.id.downImg);
-        leftImg = findViewById(R.id.leftImg);
-        rightImg = findViewById(R.id.rightImg);
-        upImg.setImageResource(R.drawable.ic_keyboard_arrow_up_black_24dp);
-        dwnImg.setImageResource(R.drawable.ic_keyboard_arrow_down_black_24dp);
-        rightImg.setImageResource(R.drawable.ic_keyboard_arrow_right_black_24dp);
-        leftImg.setImageResource(R.drawable.ic_keyboard_arrow_left_black_24dp);
-        edit = findViewById(R.id.edit);
-        write = findViewById(R.id.write);
-        blue = findViewById(R.id.blue);
-        orange = findViewById(R.id.orange);
-        yellow = findViewById(R.id.yellow);
-        red = findViewById(R.id.red);
-        sharedPreferences = getSharedPreferences(RemoteSharedPreference, Context.MODE_PRIVATE);
-        up = findViewById(R.id.upMotion);
-        down = findViewById(R.id.downMotion);
-        left = findViewById(R.id.leftMotion);
-        right = findViewById(R.id.rightMotion);
-        redText = findViewById(R.id.redText);
-        blueText = findViewById(R.id.blueText);
-        yellowText = findViewById(R.id.yellowText);
-        orangeText = findViewById(R.id.orangeText);
-        configureCard = findViewById(R.id.configureItem);
-        new ConnectionThread(ControllerActivity.this).execute();
-        up.setOnTouchListener(this);
-        down.setOnTouchListener(this);
-        right.setOnTouchListener(this);
-        left.setOnTouchListener(this);
-        blue.setOnTouchListener(this);
-        orange.setOnTouchListener(this);
-        yellow.setOnTouchListener(this);
-        red.setOnTouchListener(this);
-        status = findViewById(R.id.status);
-        statusCard = findViewById(R.id.statusCard);
-        back = findViewById(R.id.back);
-        status.setText("Disconnected");
-        bluetoothManager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
-        overlay = findViewById(R.id.overlay);
-        connectingCard = findViewById(R.id.connectingCard);
-        firebaseDatabase = FirebaseDatabase.getInstance().getReference();
-        arrayList = new ArrayList<>();
-        aSwitch = findViewById(R.id.aSwitch);
+        void sendToDevice(String data) {
+            try {
+                Log.e(TAG, "sendToDevice: " + "Writing data via new Thread " + data);
+                bluetoothSocket.getOutputStream().write(data.getBytes());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        @Override
+        public void run() {
+            byte[] buffer = new byte[5];
+            int bytes;
+
+            while (true) {
+                try {
+                    if (bluetoothSocket.getInputStream().available() > 0) {
+                        bytes = bluetoothSocket.getInputStream().read(buffer);
+                        String readMessage = new String(buffer, 0, bytes);
+                        Log.e(TAG, "run:Message received" + readMessage);
+                    } else {
+                        SystemClock.sleep(100);
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
 
     }
 
