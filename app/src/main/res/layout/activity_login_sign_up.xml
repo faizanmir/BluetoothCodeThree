@@ -22,7 +22,7 @@
 
     </RelativeLayout>
 
-    <android.support.v7.widget.CardView
+    <androidx.cardview.widget.CardView
         android:id="@+id/emailCard"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -40,8 +40,9 @@
         android:hint="Email"
         android:inputType="textEmailAddress"/>
 
-    </android.support.v7.widget.CardView>
-    <android.support.v7.widget.CardView
+    </androidx.cardview.widget.CardView>
+
+    <androidx.cardview.widget.CardView
         android:id="@+id/passwordCard"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -63,7 +64,7 @@
 
 
         />
-    </android.support.v7.widget.CardView>
+    </androidx.cardview.widget.CardView>
     <Button
         android:id="@+id/signUpbutton"
         android:layout_width="wrap_content"

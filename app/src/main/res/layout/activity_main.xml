@@ -17,7 +17,7 @@
         android:textStyle="bold"
         android:layout_above="@id/newDeviceRecyclerView"/>
 
-    <android.support.v7.widget.RecyclerView
+    <androidx.recyclerview.widget.RecyclerView
         android:layout_width="350dp"
         android:layout_height="300dp"
         android:layout_margin="20dp"
@@ -25,8 +25,7 @@
         android:id="@+id/newDeviceRecyclerView"
         android:layout_centerHorizontal="true"
         android:background="#33abc7"
-        >
-    </android.support.v7.widget.RecyclerView>
+        ></androidx.recyclerview.widget.RecyclerView>
 
     <Button
         android:layout_width="wrap_content"

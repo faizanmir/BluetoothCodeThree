@@ -14,13 +14,12 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.SystemClock;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.CardView;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CompoundButton;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
@@ -28,21 +27,24 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.cardview.widget.CardView;
+
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 
+import avishkaar.com.bluetoothcodethree.Fragments.JoyStickFragment;
 import avishkaar.com.bluetoothcodethree.ModelClasses.RemoteModelClass;
 
 import static avishkaar.com.bluetoothcodethree.DeviceListActivity.UUIDForARDUINO;
 
-public class ControllerActivity extends AppCompatActivity implements View.OnTouchListener{
+public class ControllerActivity extends AppCompatActivity implements View.OnTouchListener, JoyStickFragment.OnFragmentInteractionListener {
     BluetoothAdapter bluetoothAdapter;
-    SendReceiveThread sendReceiveThread;
+    static SendReceiveThread sendReceiveThread;
     String deviceAddress;
     BluetoothSocket socket;
     BluetoothDevice bluetoothDevice;
@@ -63,12 +65,70 @@ public class ControllerActivity extends AppCompatActivity implements View.OnTouc
     ArrayList<RemoteModelClass> arrayList;
     Switch aSwitch;
     Handler handler;
+    FrameLayout frame;
+    int flagForSectorOne, flagForSectorTwo, flagForSectorThree, flagForSectorFour;
+
+    @Override
+    public void onFragmentInteraction(int angle, int strength, int id) {
+        try {
+            if (socket != null) {
+                if ((angle > 45 && angle < 135)) {
+                    if (flagForSectorOne == 0) {
+                        socket.getOutputStream().write("F".getBytes());
+                        resetValues(0);
+                    }
+
+                } else if (angle > 135 && angle < 225) {
+                    if (flagForSectorTwo == 0) {
+                        socket.getOutputStream().write("L".getBytes());
+                        resetValues(1);
+                    }
+                } else if (angle > 225 && angle < 270) {
+                    if (flagForSectorThree == 0) {
+                        socket.getOutputStream().write("B".getBytes());
+                        resetValues(2);
+                    }
+                } else if (angle > 270) {
+                    if (flagForSectorFour == 0) {
+                        socket.getOutputStream().write("R".getBytes());
+                        resetValues(3);
+                    }
+
+                } else if (angle == 0) {
+                    socket.getOutputStream().write("X".getBytes());
+                    resetValues(99);
+                } else if (angle < 45 && angle >= 0) {
+                    if (flagForSectorFour == 0) {
+                        Log.e(TAG, "onFragmentInteraction: " + "ANGLE IN SECTOR 5");
+                        socket.getOutputStream().write("R".getBytes());
+                        resetValues(3);
+                    }
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
+    }
+
+
     @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         init();
         setTextViews();
+
+
+        findViewById(R.id.joystickSwitch).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                JoyStickFragment joyStickFragment = JoyStickFragment.newInstance();
+                joyStickFragment.show(getSupportFragmentManager(), "");
+
+            }
+        });
 
 
         configureCard.setOnClickListener(new View.OnClickListener() {
@@ -102,12 +162,12 @@ public class ControllerActivity extends AppCompatActivity implements View.OnTouc
 
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     public boolean onTouch(View v, MotionEvent event) {
 
 
-        switch (v.getId())
-        {
+        switch (v.getId()) {
             case(R.id.upMotion):
                 actionDetection(event, "F", "X", R.id.upMotion);
                 break;
@@ -143,7 +203,13 @@ public class ControllerActivity extends AppCompatActivity implements View.OnTouc
 
 //                socket.getOutputStream().write(instruction.getBytes());
 //                socket.getOutputStream().flush();
-            sendReceiveThread.sendToDevice(instruction);
+            try {
+                sendReceiveThread.sendToDevice(instruction);
+            } catch (NullPointerException e) {
+                e.printStackTrace();
+            }
+
+
             // Log.e(TAG, "writeToBluetooth: " +  "  " + "Command Written"  + instruction );
 
         }
@@ -151,7 +217,7 @@ public class ControllerActivity extends AppCompatActivity implements View.OnTouc
 
     }
 
-    @SuppressLint("ClickableViewAccessibility")
+    @SuppressLint({"ClickableViewAccessibility", "SetTextI18n"})
     void init() {
         bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 
@@ -185,8 +251,8 @@ public class ControllerActivity extends AppCompatActivity implements View.OnTouc
         yellowText = findViewById(R.id.yellowText);
         orangeText = findViewById(R.id.orangeText);
         configureCard = findViewById(R.id.configureItem);
-        new ConnectionThread(ControllerActivity.this).execute();
         new ServerClass().start();
+        new ConnectionThread(ControllerActivity.this).execute();
         up.setOnTouchListener(this);
         down.setOnTouchListener(this);
         right.setOnTouchListener(this);
@@ -206,44 +272,37 @@ public class ControllerActivity extends AppCompatActivity implements View.OnTouc
         arrayList = new ArrayList<>();
         aSwitch = findViewById(R.id.aSwitch);
         handler = new Handler();
+        frame = findViewById(R.id.frame);
+
 
     }
 
-    //*******************************************************************************************************************
-    class ConnectionThread extends AsyncTask<Void, Void, Void>
-    {
-        WeakReference<ControllerActivity> weakReference;
-
-        ConnectionThread(ControllerActivity activity) {
-            weakReference = new WeakReference<>(activity);
-        }
-
-        @Override
-        protected Void doInBackground(Void... voids) {
-            try {
-                ControllerActivity ref = weakReference.get();
-                ref.socket = ref.bluetoothDevice.createInsecureRfcommSocketToServiceRecord(UUIDForARDUINO);
-                ref.socket.connect();
-                sendReceiveThread = new SendReceiveThread(socket);
-                Log.e(TAG, "doInBackground: " +  "Connection has been established..." );
-                Log.e(TAG, "doInBackground: " + "Is Socket Connected  ?  " + ref.socket.isConnected());
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void aVoid) {
-            super.onPostExecute(aVoid);
-            ControllerActivity ref = weakReference.get();
-            if (ref.socket.isConnected()) {
-                ref.statusCard.setVisibility(View.VISIBLE);
-                ref.status.setText("Connected");
-            }
-            ref.overlay.setVisibility(View.INVISIBLE);
-            ref.connectingCard.setVisibility(View.INVISIBLE);
-
+    void resetValues(int identifier) {
+        if (identifier == 0) {
+            flagForSectorOne = 1;
+            flagForSectorTwo = 0;
+            flagForSectorThree = 0;
+            flagForSectorFour = 0;
+        } else if (identifier == 1) {
+            flagForSectorOne = 0;
+            flagForSectorTwo = 1;
+            flagForSectorThree = 0;
+            flagForSectorFour = 0;
+        } else if (identifier == 2) {
+            flagForSectorOne = 0;
+            flagForSectorTwo = 0;
+            flagForSectorThree = 1;
+            flagForSectorFour = 0;
+        } else if (identifier == 3) {
+            flagForSectorOne = 0;
+            flagForSectorTwo = 0;
+            flagForSectorThree = 0;
+            flagForSectorFour = 1;
+        } else {
+            flagForSectorOne = 0;
+            flagForSectorTwo = 0;
+            flagForSectorThree = 0;
+            flagForSectorFour = 0;
         }
     }
 
@@ -273,37 +332,43 @@ public class ControllerActivity extends AppCompatActivity implements View.OnTouc
                         | View.SYSTEM_UI_FLAG_FULLSCREEN);
     }
 
-    private class ServerClass extends Thread
+    //*******************************************************************************************************************
+    @SuppressLint("StaticFieldLeak")
+    class ConnectionThread extends AsyncTask<Void, Void, Void>
     {
-        private BluetoothServerSocket serverSocket;
+        WeakReference<ControllerActivity> weakReference;
 
-        public ServerClass() {
+        ConnectionThread(ControllerActivity activity) {
+            weakReference = new WeakReference<>(activity);
+        }
+
+        @Override
+        protected Void doInBackground(Void... voids) {
             try {
-                serverSocket = bluetoothAdapter.listenUsingRfcommWithServiceRecord("Bt3", UUIDForARDUINO);
+                ControllerActivity ref = weakReference.get();
+                ref.socket = ref.bluetoothDevice.createInsecureRfcommSocketToServiceRecord(UUIDForARDUINO);
+                ref.socket.connect();
+                sendReceiveThread = new SendReceiveThread(socket);
+                Log.e(TAG, "doInBackground: Client Thread  :" + "Connection has been established...");
+                Log.e(TAG, "doInBackground: " + "Is Socket Connected  ?  " + ref.socket.isConnected());
             } catch (IOException e) {
                 e.printStackTrace();
             }
+            return null;
         }
 
-        public void run() {
-            BluetoothSocket socket = null;
-
-            while (socket == null) {
-                try {
-                    Log.e(TAG, "run: " + "Accept Thread running...");
-                    socket = serverSocket.accept();
-                } catch (IOException e) {
-                    e.printStackTrace();
-
-                }
-
-                if (socket != null) {
-                    Log.e(TAG, "run: " + "Socket Acquired ...");
-                    sendReceiveThread = new SendReceiveThread(socket);
-                    sendReceiveThread.start();
-                    break;
-                }
+        @SuppressLint("SetTextI18n")
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            ControllerActivity ref = weakReference.get();
+            if (ref.socket.isConnected()) {
+                ref.statusCard.setVisibility(View.VISIBLE);
+                ref.status.setText("Connected");
             }
+            ref.overlay.setVisibility(View.INVISIBLE);
+            ref.connectingCard.setVisibility(View.INVISIBLE);
+
         }
     }
 
@@ -385,9 +450,60 @@ public class ControllerActivity extends AppCompatActivity implements View.OnTouc
 
     }
 
+    private class ServerClass extends Thread {
+        private BluetoothServerSocket serverSocket;
+
+        ServerClass() {
+            try {
+                Log.e(TAG, "ServerClass: Starting Server....");
+                serverSocket = bluetoothAdapter.listenUsingRfcommWithServiceRecord("Bt3", UUIDForARDUINO);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        public void run() {
+            BluetoothSocket socket = null;
+
+            while (socket == null) {
+                try {
+                    Log.e(TAG, "run:ServerThread " + "Accept Thread running...");
+                    socket = serverSocket.accept();
+                } catch (IOException e) {
+                    e.printStackTrace();
+
+                }
+
+                if (socket != null) {
+                    Log.e(TAG, "run: " + "Socket Acquired ...");
+                    sendReceiveThread = new SendReceiveThread(socket);
+                    sendReceiveThread.start();
+                    break;
+                }
+            }
+        }
+    }
+
+    void setTextViews() {
+        blueText.setText(sharedPreferences.getString(Constants.bluePressed, ""));
+        orangeText.setText(sharedPreferences.getString(Constants.orangePressed, ""));
+        yellowText.setText(sharedPreferences.getString(Constants.yellowPress, ""));
+        redText.setText(sharedPreferences.getString(Constants.redPressed, ""));
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        try {
+            socket.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     class SendReceiveThread extends Thread {
         BluetoothSocket bluetoothSocket;
-        InputStream inputStream = null;
+
 
         SendReceiveThread(BluetoothSocket bluetoothSocket) {
             this.bluetoothSocket = bluetoothSocket;
@@ -395,7 +511,7 @@ public class ControllerActivity extends AppCompatActivity implements View.OnTouc
 
         void sendToDevice(String data) {
             try {
-                Log.e(TAG, "sendToDevice: " + "Writing data via new Thread " + data);
+                Log.e(TAG, "sendToDevice:Send Receive Thread  " + "Writing data via new Thread " + data);
                 bluetoothSocket.getOutputStream().write(data.getBytes());
             } catch (IOException e) {
                 e.printStackTrace();
@@ -414,32 +530,16 @@ public class ControllerActivity extends AppCompatActivity implements View.OnTouc
                         String readMessage = new String(buffer, 0, bytes);
                         Log.e(TAG, "run:Message received" + readMessage);
                     } else {
+                        Log.e(TAG, "run: " + "Sleeping");
                         SystemClock.sleep(100);
                     }
                 } catch (IOException e) {
+                    Log.e(TAG, "run: " + "Error reading from bluetooth...");
                     e.printStackTrace();
                 }
             }
         }
 
-    }
-
-    void setTextViews()
-    {
-        blueText.setText(sharedPreferences.getString(Constants.bluePressed,""));
-        orangeText.setText(sharedPreferences.getString(Constants.orangePressed,""));
-        yellowText.setText(sharedPreferences.getString(Constants.yellowPress,""));
-        redText.setText(sharedPreferences.getString(Constants.redPressed,""));
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        try {
-            socket.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 }
 

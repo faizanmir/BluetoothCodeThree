@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:custom="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/background"
+    tools:context=".Fragments.JoyStickFragment">
+
+    <io.github.controlwear.virtual.joystick.android.JoystickView
+        android:id="@+id/leftStick"
+        android:layout_width="200dp"
+        android:layout_height="200dp"
+        android:layout_gravity="start|bottom"
+        android:layout_margin="30dp"
+        custom:JV_autoReCenterButton="true"
+        custom:JV_backgroundColor="#2567AD"
+        custom:JV_borderColor="#232425"
+        custom:JV_borderWidth="4dp"
+        custom:JV_buttonColor="#232425"
+        custom:JV_buttonSizeRatio="25%"
+        custom:JV_fixedCenter="false" />
+
+    <ImageView
+        android:id="@+id/fragClose"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end"
+        android:layout_margin="20dp"
+        android:src="@drawable/ic_close_black_24dp" />
+
+
+</FrameLayout>
