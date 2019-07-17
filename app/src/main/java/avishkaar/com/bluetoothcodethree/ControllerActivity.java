@@ -13,13 +13,11 @@ import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.SystemClock;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CompoundButton;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
@@ -41,8 +39,7 @@ import avishkaar.com.bluetoothcodethree.Fragments.JoyStickFragment;
 import avishkaar.com.bluetoothcodethree.ModelClasses.RemoteModelClass;
 
 import static avishkaar.com.bluetoothcodethree.DeviceListActivity.UUIDForARDUINO;
-
-public class ControllerActivity extends AppCompatActivity implements View.OnTouchListener, JoyStickFragment.OnFragmentInteractionListener {
+public class ControllerActivity extends AppCompatActivity implements View.OnTouchListener,JoyStickFragment.OnFragmentInteractionListener{
     BluetoothAdapter bluetoothAdapter;
     static SendReceiveThread sendReceiveThread;
     String deviceAddress;
@@ -57,57 +54,78 @@ public class ControllerActivity extends AppCompatActivity implements View.OnTouc
     CardView blue, orange, yellow, red, configureCard, statusCard, back;
     SharedPreferences sharedPreferences;
     TextView blueText,redText,orangeText,yellowText;
-    TextView status;
+    TextView status,autoCardText;
     BluetoothManager bluetoothManager;
     RelativeLayout overlay;
     CardView connectingCard;
     DatabaseReference firebaseDatabase;
-    ArrayList<RemoteModelClass> arrayList;
+    ArrayList<RemoteModelClass> remoteModelClassArrayList;
     Switch aSwitch;
     Handler handler;
-    FrameLayout frame;
-    int flagForSectorOne, flagForSectorTwo, flagForSectorThree, flagForSectorFour;
+    CardView autoCardView;
+    int flagForAutoCardView;
+    int flagForSectorOne,flagForSectorTwo,flagForSectorThree,flagForSectorFour;
+
 
     @Override
     public void onFragmentInteraction(int angle, int strength, int id) {
-        try {
-            if (socket != null) {
-                if ((angle > 45 && angle < 135)) {
-                    if (flagForSectorOne == 0) {
-                        socket.getOutputStream().write("F".getBytes());
-                        resetValues(0);
-                    }
+            try {
+                /**
+                // Ladies and Gentlemen WE HAVE MADE THE ROBOT DANCE 15 jul 19
+                //
 
-                } else if (angle > 135 && angle < 225) {
-                    if (flagForSectorTwo == 0) {
-                        socket.getOutputStream().write("L".getBytes());
-                        resetValues(1);
-                    }
-                } else if (angle > 225 && angle < 270) {
-                    if (flagForSectorThree == 0) {
-                        socket.getOutputStream().write("B".getBytes());
-                        resetValues(2);
-                    }
-                } else if (angle > 270) {
-                    if (flagForSectorFour == 0) {
-                        socket.getOutputStream().write("R".getBytes());
-                        resetValues(3);
-                    }
+                 **/
+                if(socket!=null) {
+                    if (strength >=90) {
 
-                } else if (angle == 0) {
-                    socket.getOutputStream().write("X".getBytes());
-                    resetValues(99);
-                } else if (angle < 45 && angle >= 0) {
-                    if (flagForSectorFour == 0) {
-                        Log.e(TAG, "onFragmentInteraction: " + "ANGLE IN SECTOR 5");
-                        socket.getOutputStream().write("R".getBytes());
-                        resetValues(3);
+                        if ((angle > 45 && angle <= 135)) {
+
+                            if (flagForSectorOne == 0) {
+                                socket.getOutputStream().write("F".getBytes());
+                                socket.getOutputStream().flush();
+                                resetValues(0);
+                            }
+
+                        } else if (angle > 135 && angle <= 225) {
+                            if (flagForSectorTwo == 0) {
+                                socket.getOutputStream().write("L".getBytes());
+                                socket.getOutputStream().flush();
+                                resetValues(1);
+                            }
+                        } else if (angle > 225 && angle < 315) {
+                            if (flagForSectorThree == 0) {
+                                socket.getOutputStream().write("B".getBytes());
+                                socket.getOutputStream().flush();
+                                resetValues(2);
+                            }
+                        } else if (angle > 315 ) {
+                            if (flagForSectorFour == 0) {
+                                socket.getOutputStream().write("R".getBytes());
+                                socket.getOutputStream().flush();
+                                resetValues(3);
+                            }
+                        } else if (angle <= 45 && angle >= 0) {
+
+                            if (flagForSectorFour == 0) {
+                                Log.e(TAG, "onFragmentInteraction: " + "ANGLE IN SECTOR 5");
+                                socket.getOutputStream().write("R".getBytes());
+                                socket.getOutputStream().flush();
+                                resetValues(3);
+                            }
+                        }
+
+                    }
+                    else if(strength ==0) {
+                        socket.getOutputStream().write("X".getBytes());
+                        socket.getOutputStream().flush();
+                        resetValues(99);
+
                     }
                 }
+
+            }catch ( IOException e) {
+                e.printStackTrace();
             }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
 
 
     }
@@ -125,7 +143,7 @@ public class ControllerActivity extends AppCompatActivity implements View.OnTouc
             @Override
             public void onClick(View v) {
                 JoyStickFragment joyStickFragment = JoyStickFragment.newInstance();
-                joyStickFragment.show(getSupportFragmentManager(), "");
+                joyStickFragment.show(getSupportFragmentManager(),"");
 
             }
         });
@@ -160,6 +178,33 @@ public class ControllerActivity extends AppCompatActivity implements View.OnTouc
             }
         });
 
+
+        autoCardView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+
+                if(flagForAutoCardView == 0 )
+                {
+                    writeToBluetooth("K");
+                    autoCardView.setCardBackgroundColor(Color.parseColor("#000000"));
+                    autoCardText.setTextColor(Color.parseColor("#FFFFFF"));
+                    flagForAutoCardView=1;
+                }
+                else if(flagForAutoCardView ==1)
+                {
+                    writeToBluetooth("W");
+                    autoCardView.setCardBackgroundColor(Color.parseColor("#FFFFFF"));
+                    autoCardText.setTextColor(Color.parseColor("#000000"));
+                    flagForAutoCardView=0;
+                }
+            }
+        });
+
+
+
+
+
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -167,7 +212,8 @@ public class ControllerActivity extends AppCompatActivity implements View.OnTouc
     public boolean onTouch(View v, MotionEvent event) {
 
 
-        switch (v.getId()) {
+        switch (v.getId())
+        {
             case(R.id.upMotion):
                 actionDetection(event, "F", "X", R.id.upMotion);
                 break;
@@ -200,18 +246,11 @@ public class ControllerActivity extends AppCompatActivity implements View.OnTouc
     void writeToBluetooth(String instruction) {
 
         if (socket != null) {
-
-//                socket.getOutputStream().write(instruction.getBytes());
-//                socket.getOutputStream().flush();
             try {
                 sendReceiveThread.sendToDevice(instruction);
-            } catch (NullPointerException e) {
+            }catch (NullPointerException e){
                 e.printStackTrace();
             }
-
-
-            // Log.e(TAG, "writeToBluetooth: " +  "  " + "Command Written"  + instruction );
-
         }
 
 
@@ -219,11 +258,13 @@ public class ControllerActivity extends AppCompatActivity implements View.OnTouc
 
     @SuppressLint({"ClickableViewAccessibility", "SetTextI18n"})
     void init() {
+        flagForAutoCardView =0;
         bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-
         setContentView(R.layout.activity_controller_actvity);
         progressBar = findViewById(R.id.barForProgress);
         Intent intent = getIntent();
+        autoCardView = findViewById(R.id.autoCard);
+        autoCardText = findViewById(R.id.autoCardText);
         deviceAddress = intent.getStringExtra(DeviceListActivity.DEVICE_EXTRA);
         Log.e(TAG, "init: " + "device Address" + deviceAddress);
         bluetoothDevice = bluetoothAdapter.getRemoteDevice(deviceAddress);
@@ -251,7 +292,8 @@ public class ControllerActivity extends AppCompatActivity implements View.OnTouc
         yellowText = findViewById(R.id.yellowText);
         orangeText = findViewById(R.id.orangeText);
         configureCard = findViewById(R.id.configureItem);
-        new ServerClass().start();
+
+       // new ServerClass().start(); /*** Server started **/
         new ConnectionThread(ControllerActivity.this).execute();
         up.setOnTouchListener(this);
         down.setOnTouchListener(this);
@@ -269,40 +311,47 @@ public class ControllerActivity extends AppCompatActivity implements View.OnTouc
         overlay = findViewById(R.id.overlay);
         connectingCard = findViewById(R.id.connectingCard);
         firebaseDatabase = FirebaseDatabase.getInstance().getReference();
-        arrayList = new ArrayList<>();
+        remoteModelClassArrayList = new ArrayList<>();
         aSwitch = findViewById(R.id.aSwitch);
         handler = new Handler();
-        frame = findViewById(R.id.frame);
-
-
     }
 
-    void resetValues(int identifier) {
-        if (identifier == 0) {
-            flagForSectorOne = 1;
-            flagForSectorTwo = 0;
-            flagForSectorThree = 0;
-            flagForSectorFour = 0;
-        } else if (identifier == 1) {
-            flagForSectorOne = 0;
-            flagForSectorTwo = 1;
-            flagForSectorThree = 0;
-            flagForSectorFour = 0;
-        } else if (identifier == 2) {
-            flagForSectorOne = 0;
-            flagForSectorTwo = 0;
-            flagForSectorThree = 1;
-            flagForSectorFour = 0;
-        } else if (identifier == 3) {
-            flagForSectorOne = 0;
-            flagForSectorTwo = 0;
-            flagForSectorThree = 0;
-            flagForSectorFour = 1;
-        } else {
-            flagForSectorOne = 0;
-            flagForSectorTwo = 0;
-            flagForSectorThree = 0;
-            flagForSectorFour = 0;
+    void resetValues(int identifier)
+    {
+        if(identifier == 0)
+        {
+            flagForSectorOne=1;
+            flagForSectorTwo =0;
+            flagForSectorThree=0;
+            flagForSectorFour=0;
+        }
+        else if(identifier == 1)
+        {
+            flagForSectorOne=0;
+            flagForSectorTwo =1;
+            flagForSectorThree=0;
+            flagForSectorFour=0;
+        }
+        else if(identifier==2)
+        {
+            flagForSectorOne=0;
+            flagForSectorTwo =0;
+            flagForSectorThree=1;
+            flagForSectorFour=0;
+        }
+        else if(identifier ==3)
+        {
+            flagForSectorOne=0;
+            flagForSectorTwo =0;
+            flagForSectorThree=0;
+            flagForSectorFour=1;
+        }
+        else
+        {
+            flagForSectorOne=0;
+            flagForSectorTwo =0;
+            flagForSectorThree=0;
+            flagForSectorFour=0;
         }
     }
 
@@ -349,7 +398,8 @@ public class ControllerActivity extends AppCompatActivity implements View.OnTouc
                 ref.socket = ref.bluetoothDevice.createInsecureRfcommSocketToServiceRecord(UUIDForARDUINO);
                 ref.socket.connect();
                 sendReceiveThread = new SendReceiveThread(socket);
-                Log.e(TAG, "doInBackground: Client Thread  :" + "Connection has been established...");
+                sendReceiveThread.start();
+                Log.e(TAG, "doInBackground: Client Thread  :" +  "Connection has been established..." );
                 Log.e(TAG, "doInBackground: " + "Is Socket Connected  ?  " + ref.socket.isConnected());
             } catch (IOException e) {
                 e.printStackTrace();
@@ -375,7 +425,6 @@ public class ControllerActivity extends AppCompatActivity implements View.OnTouc
     void actionDetection(MotionEvent event,String pressed,String released,int viewId)
     {
         if(!((pressed.isEmpty())&&(released.isEmpty()))) {
-            Log.e(TAG, "actionDetection: " +"Pressed : " +pressed + "Released" + released );
             CardView c = findViewById(viewId);
 
             if (event.getAction() == MotionEvent.ACTION_DOWN) {
@@ -450,12 +499,13 @@ public class ControllerActivity extends AppCompatActivity implements View.OnTouc
 
     }
 
-    private class ServerClass extends Thread {
+    private class ServerClass extends Thread
+    {
         private BluetoothServerSocket serverSocket;
 
         ServerClass() {
             try {
-                Log.e(TAG, "ServerClass: Starting Server....");
+                Log.e(TAG, "ServerClass: Starting Server...." );
                 serverSocket = bluetoothAdapter.listenUsingRfcommWithServiceRecord("Bt3", UUIDForARDUINO);
             } catch (IOException e) {
                 e.printStackTrace();
@@ -467,7 +517,7 @@ public class ControllerActivity extends AppCompatActivity implements View.OnTouc
 
             while (socket == null) {
                 try {
-                    Log.e(TAG, "run:ServerThread " + "Accept Thread running...");
+                    Log.e(TAG, "ServerThread " + "Accept Thread running...");
                     socket = serverSocket.accept();
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -484,11 +534,12 @@ public class ControllerActivity extends AppCompatActivity implements View.OnTouc
         }
     }
 
-    void setTextViews() {
-        blueText.setText(sharedPreferences.getString(Constants.bluePressed, ""));
-        orangeText.setText(sharedPreferences.getString(Constants.orangePressed, ""));
-        yellowText.setText(sharedPreferences.getString(Constants.yellowPress, ""));
-        redText.setText(sharedPreferences.getString(Constants.redPressed, ""));
+    void setTextViews()
+    {
+        blueText.setText(sharedPreferences.getString(Constants.bluePressed,""));
+        orangeText.setText(sharedPreferences.getString(Constants.orangePressed,""));
+        yellowText.setText(sharedPreferences.getString(Constants.yellowPress,""));
+        redText.setText(sharedPreferences.getString(Constants.redPressed,""));
     }
 
     @Override
@@ -496,6 +547,7 @@ public class ControllerActivity extends AppCompatActivity implements View.OnTouc
         super.onDestroy();
         try {
             socket.close();
+
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -511,7 +563,15 @@ public class ControllerActivity extends AppCompatActivity implements View.OnTouc
 
         void sendToDevice(String data) {
             try {
-                Log.e(TAG, "sendToDevice:Send Receive Thread  " + "Writing data via new Thread " + data);
+                Log.e(TAG, "sendToDevice: " + data );
+
+                /*
+                * This code can be executed on the main thread too but then why burden the UI with network tasks
+                *
+                *
+                *
+                * */
+
                 bluetoothSocket.getOutputStream().write(data.getBytes());
             } catch (IOException e) {
                 e.printStackTrace();
@@ -520,24 +580,42 @@ public class ControllerActivity extends AppCompatActivity implements View.OnTouc
 
         @Override
         public void run() {
-            byte[] buffer = new byte[5];
-            int bytes;
 
-            while (true) {
-                try {
-                    if (bluetoothSocket.getInputStream().available() > 0) {
-                        bytes = bluetoothSocket.getInputStream().read(buffer);
-                        String readMessage = new String(buffer, 0, bytes);
-                        Log.e(TAG, "run:Message received" + readMessage);
-                    } else {
-                        Log.e(TAG, "run: " + "Sleeping");
-                        SystemClock.sleep(100);
-                    }
-                } catch (IOException e) {
-                    Log.e(TAG, "run: " + "Error reading from bluetooth...");
-                    e.printStackTrace();
-                }
-            }
+            /*                                          CODE FOR SERVER :commented due to optimization problems
+             *      The thread used in this is an infinite loop causing problems
+             *      need to find a way to make the loop run seamlessly without causing processes slowdown
+             *      probably use a looper
+             *
+             *     16 Jul 19
+             *
+             *
+             *
+             *
+             *
+             * */
+
+
+ //           byte[] buffer = new byte[1024];
+//            int bytes;
+//
+//            while (true) {
+//                try {
+//                    if (bluetoothSocket.getInputStream().available() > 0) {
+//                        bytes = bluetoothSocket.getInputStream().read(buffer);
+//                        String readMessage = new String(buffer, 0, bytes);
+//                        Log.e(TAG, "Message received......" + readMessage);
+//
+//
+//                    } else {
+//                        Log.e(TAG, "Sleeping....." );
+//                        SystemClock.sleep(100);
+//                    }
+//                } catch (IOException e) {
+//                    Log.e(TAG, "Error reading from bluetooth..." );
+//                    e.printStackTrace();
+ //               }
+            //
+            //        }
         }
 
     }
