@@ -397,7 +397,10 @@ public class ControllerActivity extends AppCompatActivity implements View.OnTouc
                 ControllerActivity ref = weakReference.get();
                 ref.socket = ref.bluetoothDevice.createInsecureRfcommSocketToServiceRecord(UUIDForARDUINO);
                 ref.socket.connect();
+
                 sendReceiveThread = new SendReceiveThread(socket);
+
+
                 sendReceiveThread.start();
                 Log.e(TAG, "doInBackground: Client Thread  :" +  "Connection has been established..." );
                 Log.e(TAG, "doInBackground: " + "Is Socket Connected  ?  " + ref.socket.isConnected());
@@ -499,6 +502,16 @@ public class ControllerActivity extends AppCompatActivity implements View.OnTouc
 
     }
 
+
+    /**  SERVER THREAD
+     *
+     *
+     *
+     * @param run() provides for an open socket connection for bluetooth however due to one way communication with the device has been commented
+     *
+     *
+     * **/
+  
     private class ServerClass extends Thread
     {
         private BluetoothServerSocket serverSocket;

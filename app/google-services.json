@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "338121873536",
+    "firebase_url": "https://bluetoothcodethree.firebaseio.com",
+    "project_id": "bluetoothcodethree",
+    "storage_bucket": "bluetoothcodethree.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:338121873536:android:ce30f7c81d1f2928",
+        "android_client_info": {
+          "package_name": "avishkaar.com.bluetoothcodethree"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "338121873536-gqj96f5274drl30fumele219ktgo72e3.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "avishkaar.com.bluetoothcodethree",
+            "certificate_hash": "30d04281056f68f449ce1519a324912cce82d97c"
+          }
+        },
+        {
+          "client_id": "338121873536-frek8jj6l6v0q94ruuc8mmtmqbeeg5tg.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCYXN5viUVIlMVpa-CZ_I5tJZon2pQhZnU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "338121873536-frek8jj6l6v0q94ruuc8mmtmqbeeg5tg.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

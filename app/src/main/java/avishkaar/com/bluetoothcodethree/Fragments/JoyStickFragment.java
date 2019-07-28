@@ -47,10 +47,13 @@ public class JoyStickFragment extends DialogFragment {
                 dismiss();
             }
         });
+        joystickView.isAutoReCenterButton();
+
         joystickView.setOnMoveListener(new JoystickView.OnMoveListener() {
             @Override
             public void onMove(int angle, int strength) {
                 mListener.onFragmentInteraction(angle, strength, 1);
+
             }
         });
 
