@@ -56,7 +56,7 @@ public class DeviceListActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        registerReceiver(broadcastReceiver,filter);
+        registerReceiver(broadcastReceiver,makeIntentFilters());
     }
 
     @Override
@@ -129,13 +129,7 @@ public class DeviceListActivity extends AppCompatActivity {
             }
         };
 
-
-        filter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
-        this.registerReceiver(broadcastReceiver, filter);
-        filter = new IntentFilter(BluetoothAdapter.ACTION_DISCOVERY_FINISHED);
-        this.registerReceiver(broadcastReceiver, filter);
-
-
+        this.registerReceiver(broadcastReceiver, makeIntentFilters());
         scan.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -166,7 +160,6 @@ public class DeviceListActivity extends AppCompatActivity {
         scan = findViewById(R.id.scanDevice);
         stop = findViewById(R.id.stopScan);
         newBluetoothDevices = new ArrayList<>();
-        write = findViewById(R.id.write);
         newDeviceAdapter  = new DeviceAdapter(newBluetoothDevices, bluetoothInterface);
         newDeviceLayoutManager = new LinearLayoutManager(this, RecyclerView.VERTICAL, false);
 
@@ -186,6 +179,15 @@ public class DeviceListActivity extends AppCompatActivity {
         bluetoothAdapter.cancelDiscovery();
 
     }
+
+    IntentFilter makeIntentFilters()
+    {
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(BluetoothDevice.ACTION_FOUND);
+        intentFilter.addAction(BluetoothAdapter.ACTION_DISCOVERY_FINISHED);
+        return intentFilter;
+    }
+
     @Override
     public void onWindowFocusChanged(boolean hasFocus) {
         super.onWindowFocusChanged(hasFocus);
@@ -214,8 +216,8 @@ public class DeviceListActivity extends AppCompatActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        if(requestCode==REQUEST_ENABLE_BT)
-        {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == REQUEST_ENABLE_BT) {
             triggerDeviceAddition();
         }
     }

@@ -14,107 +14,11 @@
         android:foreground="#80000000"
         android:id="@+id/overlay"
         android:focusable="false"
+    android:visibility="gone"
       >
     </RelativeLayout>
 
 
-
-    <androidx.cardview.widget.CardView
-        android:id="@+id/autoCard"
-        android:layout_width="60dp"
-        android:layout_height="60dp"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentBottom="true"
-        android:layout_margin="20dp"
-        app:cardCornerRadius="30dp">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:text="A"
-            android:textSize="30sp"
-            android:textStyle="bold"
-            android:id="@+id/autoCardText"/>
-
-    </androidx.cardview.widget.CardView>
-
-
-
-
-
-    <androidx.cardview.widget.CardView
-        android:id="@+id/joystickSwitch"
-        android:layout_width="60dp"
-        android:layout_height="60dp"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentBottom="true"
-        android:layout_margin="20dp"
-        app:cardCornerRadius="30dp">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:text="J"
-            android:textSize="30sp"
-            android:textStyle="bold" />
-
-    </androidx.cardview.widget.CardView>
-
-
-    <androidx.cardview.widget.CardView
-        android:layout_width="80dp"
-        android:layout_height="80dp"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="100dp"
-        android:layout_centerInParent="true"
-        app:cardCornerRadius="10dp"
-        android:id="@+id/switchCard1">
-        <Switch
-            android:layout_width="50dp"
-            android:layout_height="60dp"
-            android:layout_gravity="center"
-            android:id="@+id/aSwitch"
-           />
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Reset"
-            android:layout_gravity="bottom|center_horizontal"
-            android:textSize="20sp"
-            android:textColor="@android:color/black"
-            />
-    </androidx.cardview.widget.CardView>
-
-    <androidx.cardview.widget.CardView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:cardBackgroundColor="#FFFFFF"
-        android:layout_centerHorizontal="true"
-        android:layout_margin="20dp"
-        app:cardCornerRadius="20dp"
-        android:padding="5dp"
-        >
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Hi Otto"
-        android:textSize="30sp"
-        android:textColor="#3E4041"
-        android:layout_gravity="center"
-        android:padding="10dp"
-
-        />
-    </androidx.cardview.widget.CardView>
-
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Write"
-        android:layout_alignParentBottom="true"
-        android:id="@+id/write"
-        android:visibility="invisible"/>
     <RelativeLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -362,7 +266,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:cardBackgroundColor="#FFFFFF"
-        android:layout_alignParentBottom="true"
+        android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
         android:layout_margin="20dp"
         app:cardCornerRadius="20dp"
@@ -370,8 +274,6 @@
         android:padding="5dp"
         android:id="@+id/statusCard"
         >
-
-
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -397,8 +299,49 @@
             android:layout_gravity="center"
             android:src="@drawable/ic_arrow_back_black_24dp"
             />
-
     </androidx.cardview.widget.CardView>
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_margin="10dp"
+        app:cardCornerRadius="20dp"
+        >
+        <EditText
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@android:color/transparent"
+            android:maxLines="1"
+            android:maxLength="30"
+            android:id="@+id/userText"
+            android:hint="Enter your text here"
+            android:layout_margin="10dp"
+            android:layout_gravity="start|center_vertical"
+
+            />
+
+        <androidx.cardview.widget.CardView
+            android:layout_width="60dp"
+            android:layout_height="50dp"
+            android:layout_gravity="end"
+            app:cardBackgroundColor="#ffaa00"
+            app:cardCornerRadius="20dp"
+            android:layout_margin="5dp"
+            android:id="@+id/sendUserText"
+            app:cardElevation="5dp"
+            >
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="Send"
+                />
+        </androidx.cardview.widget.CardView>
+    </androidx.cardview.widget.CardView>
+
+
 
 
 </RelativeLayout>

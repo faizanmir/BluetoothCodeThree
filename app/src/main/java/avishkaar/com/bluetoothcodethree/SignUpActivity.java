@@ -12,6 +12,8 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
@@ -57,6 +59,7 @@ public class SignUpActivity extends AppCompatActivity {
         });
 
         FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+
         if (firebaseUser != null) {
             String email =  firebaseUser.getEmail();
             Log.e(TAG, "onCreate: " + email + "Logged in" );
@@ -69,29 +72,40 @@ public class SignUpActivity extends AppCompatActivity {
 
     private void sendToFirebase(final String emailAddress, final String userPassword) {
 
-        mAuth.createUserWithEmailAndPassword(emailAddress,userPassword).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-            @Override
-            public void onComplete(@NonNull Task<AuthResult> task) {
-                if(task.isSuccessful())
-                {
-                   startListActivity();
-                }
-                else
-                {
-                    mAuth.signInWithEmailAndPassword(emailAddress,userPassword).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                        @Override
-                        public void onComplete(@NonNull Task<AuthResult> task) {
-                            Log.e(TAG, "onComplete: " + FirebaseAuth.getInstance().getCurrentUser().getEmail() );
+
+            Log.e(TAG, "sendToFirebase: " );
+
+            try {
+                mAuth.createUserWithEmailAndPassword(emailAddress, userPassword).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (task.isSuccessful()) {
+                            Log.e(TAG, "onComplete:Created " + task.getResult());
                             startListActivity();
                         }
-                    });
-                    {
-
+                        else
+                        {
+                            mAuth.signInWithEmailAndPassword(emailAddress, userPassword).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                                @Override
+                                public void onComplete(@NonNull Task<AuthResult> task) {
+                                    if (task.isSuccessful())
+                                    {
+                                        Log.e(TAG, "onComplete: " + task.getResult() );
+                                        startListActivity();
+                                    }
+                                }
+                            });
+                        }
                     }
-                }
+                });
+            }catch (Exception e)
+            {
+                Log.e(TAG, "sendToFirebase: " + "Signing in" );
+
             }
-        });
-    }
+        }
+
+
 
 
     void startListActivity()
