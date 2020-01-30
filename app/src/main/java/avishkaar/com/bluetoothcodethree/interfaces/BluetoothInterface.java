@@ -1,8 +1,8 @@
-package avishkaar.com.bluetoothcodethree.Interfaces;
+package avishkaar.com.bluetoothcodethree.interfaces;
 
 import android.bluetooth.BluetoothDevice;
 
-public interface bluetoothInterface {
+public interface BluetoothInterface {
     void bluetoothAddress(String deviceName, String deviceAddress, BluetoothDevice bluetoothDevice);
 }
 

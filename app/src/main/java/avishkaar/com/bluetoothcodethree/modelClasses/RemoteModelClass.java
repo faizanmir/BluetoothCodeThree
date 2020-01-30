@@ -1,4 +1,4 @@
-package avishkaar.com.bluetoothcodethree.ModelClasses;
+package avishkaar.com.bluetoothcodethree.modelClasses;
 
 public class RemoteModelClass {
 

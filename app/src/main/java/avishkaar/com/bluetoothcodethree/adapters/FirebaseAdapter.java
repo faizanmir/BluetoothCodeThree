@@ -1,4 +1,4 @@
-package avishkaar.com.bluetoothcodethree.Adapters;
+package avishkaar.com.bluetoothcodethree.adapters;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -16,16 +16,16 @@ import com.google.firebase.database.DatabaseReference;
 import java.util.ArrayList;
 import java.util.Objects;
 
-import avishkaar.com.bluetoothcodethree.Interfaces.dataPassToSelectionActivity;
-import avishkaar.com.bluetoothcodethree.ModelClasses.RemoteModelClass;
+import avishkaar.com.bluetoothcodethree.interfaces.DataPassToSelectionActivity;
+import avishkaar.com.bluetoothcodethree.modelClasses.RemoteModelClass;
 import avishkaar.com.bluetoothcodethree.R;
 
 public class FirebaseAdapter extends  RecyclerView.Adapter<FirebaseAdapter.FirebaseViewHolder>{
     private ArrayList<RemoteModelClass> remoteModelClassArrayList;
-    private dataPassToSelectionActivity ref;
+    private DataPassToSelectionActivity ref;
     private DatabaseReference firebaseDatabase;
 
-    public FirebaseAdapter(ArrayList<RemoteModelClass> remoteModelClassArrayList, dataPassToSelectionActivity ref, DatabaseReference firebaseDatabase) {
+    public FirebaseAdapter(ArrayList<RemoteModelClass> remoteModelClassArrayList, DataPassToSelectionActivity ref, DatabaseReference firebaseDatabase) {
         this.remoteModelClassArrayList = remoteModelClassArrayList;
         this.ref=ref;
         this.firebaseDatabase = firebaseDatabase;

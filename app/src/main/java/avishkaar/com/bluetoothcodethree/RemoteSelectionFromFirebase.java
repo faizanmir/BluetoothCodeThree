@@ -24,9 +24,9 @@ import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
 
-import avishkaar.com.bluetoothcodethree.Adapters.FirebaseAdapter;
-import avishkaar.com.bluetoothcodethree.Interfaces.dataPassToSelectionActivity;
-import avishkaar.com.bluetoothcodethree.ModelClasses.RemoteModelClass;
+import avishkaar.com.bluetoothcodethree.adapters.FirebaseAdapter;
+import avishkaar.com.bluetoothcodethree.interfaces.DataPassToSelectionActivity;
+import avishkaar.com.bluetoothcodethree.modelClasses.RemoteModelClass;
 
 public class RemoteSelectionFromFirebase extends AppCompatActivity {
     private static final String TAG = "RemoteSelectionFromFire";
@@ -34,7 +34,7 @@ DatabaseReference firebaseDatabase;
 ArrayList<RemoteModelClass> savedRemoteArrayList;
 String deviceAddress;
 FirebaseAdapter firebaseAdapter;
-dataPassToSelectionActivity ref;
+DataPassToSelectionActivity ref;
 SharedPreferences sharedPreferences;
 FirebaseUser firebaseUser;
     RecyclerView firebaseRecyclerview;
@@ -47,7 +47,7 @@ FirebaseUser firebaseUser;
         Intent intent  = getIntent();
         deviceAddress = intent.getStringExtra(DeviceListActivity.DEVICE_EXTRA);
 
-        ref = new dataPassToSelectionActivity() {
+        ref = new DataPassToSelectionActivity() {
             @Override
             public void passDataToSelectionActivity(RemoteModelClass remoteModelClass) {
 

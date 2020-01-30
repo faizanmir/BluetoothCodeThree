@@ -25,7 +25,7 @@
         android:id="@+id/newDeviceRecyclerView"
         android:layout_centerHorizontal="true"
         android:background="#33abc7"
-        ></androidx.recyclerview.widget.RecyclerView>
+        />
 
     <Button
         android:layout_width="wrap_content"

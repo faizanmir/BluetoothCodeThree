@@ -19,9 +19,9 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
-import avishkaar.com.bluetoothcodethree.ModelClasses.ConfigClass;
-import avishkaar.com.bluetoothcodethree.ModelClasses.DataStringClass;
-import avishkaar.com.bluetoothcodethree.ModelClasses.RemoteModelClass;
+import avishkaar.com.bluetoothcodethree.modelClasses.ConfigClass;
+import avishkaar.com.bluetoothcodethree.modelClasses.DataStringClass;
+import avishkaar.com.bluetoothcodethree.modelClasses.RemoteModelClass;
 
 public class ConfigureActivity extends AppCompatActivity implements CustomCommandDialog.dataFromDialog {
     SharedPreferences sharedPreferences;

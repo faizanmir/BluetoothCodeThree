@@ -30,8 +30,8 @@ import java.util.ArrayList;
 import java.util.Set;
 import java.util.UUID;
 
-import avishkaar.com.bluetoothcodethree.Adapters.DeviceAdapter;
-import avishkaar.com.bluetoothcodethree.Interfaces.bluetoothInterface;
+import avishkaar.com.bluetoothcodethree.adapters.DeviceAdapter;
+import avishkaar.com.bluetoothcodethree.interfaces.BluetoothInterface;
 
 public class DeviceListActivity extends AppCompatActivity {
     private BluetoothAdapter bluetoothAdapter;
@@ -47,10 +47,9 @@ public class DeviceListActivity extends AppCompatActivity {
     BluetoothDevice bluetoothDevice;
     static final UUID UUIDForARDUINO = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
     static final  String DEVICE_EXTRA= "dev";
-    IntentFilter filter;
     DeviceAdapter newDeviceAdapter;
     RecyclerView.LayoutManager newDeviceLayoutManager;
-     avishkaar.com.bluetoothcodethree.Interfaces.bluetoothInterface bluetoothInterface;
+     BluetoothInterface bluetoothInterface;
      DatabaseReference firebaseReference ;
 
     @Override
@@ -73,7 +72,7 @@ public class DeviceListActivity extends AppCompatActivity {
                     0);
         }
 
-        bluetoothInterface= new bluetoothInterface() {
+        bluetoothInterface= new BluetoothInterface() {
             @Override
             public void bluetoothAddress(String deviceName, String deviceAddress, BluetoothDevice bluetoothDevice) {
                 Log.e(TAG, "bluetoothAddress: InterfaceTriggered" + "    " + "DeviceReceived : " + deviceName + "dev Address" + deviceAddress);

@@ -18,7 +18,9 @@ import android.view.View.OnTouchListener
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.cardview.widget.CardView
-import avishkaar.com.bluetoothcodethree.ModelClasses.RemoteModelClass
+import avishkaar.com.bluetoothcodethree.adapters.SpinnerAdapter
+import avishkaar.com.bluetoothcodethree.modelClasses.Face
+import avishkaar.com.bluetoothcodethree.modelClasses.RemoteModelClass
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import kotlinx.android.synthetic.main.activity_controller_actvity.*
@@ -26,9 +28,10 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.Dispatchers.Main
 import java.io.IOException
-import java.util.*
+import kotlin.collections.ArrayList
 
-class ControllerActivity : AppCompatActivity(), OnTouchListener {
+@Suppress("NULLABILITY_MISMATCH_BASED_ON_JAVA_ANNOTATIONS", "BlockingMethodInNonBlockingContext")
+class ControllerActivity : AppCompatActivity(), OnTouchListener,AdapterView.OnItemSelectedListener {
     lateinit var bluetoothAdapter: BluetoothAdapter
     var deviceAddress: String? = null
     lateinit var socket: BluetoothSocket
@@ -43,11 +46,11 @@ class ControllerActivity : AppCompatActivity(), OnTouchListener {
     lateinit var leftImg: ImageView
     lateinit var rightImg: ImageView
     var edit: ImageView? = null
-    lateinit var blue: CardView
-    lateinit var orange: CardView
-    lateinit var yellow: CardView
-    lateinit var red: CardView
-    var configureCard: CardView? = null
+    private lateinit var blue: CardView
+    private lateinit var orange: CardView
+    private lateinit var yellow: CardView
+    private lateinit var red: CardView
+    private var configureCard: CardView? = null
     var statusCard: CardView? = null
     var back: CardView? = null
     var sharedPreferences: SharedPreferences? = null
@@ -56,12 +59,14 @@ class ControllerActivity : AppCompatActivity(), OnTouchListener {
     var orangeText: TextView? = null
     var yellowText: TextView? = null
     lateinit var status: TextView
+    lateinit var faceAdapter:avishkaar.com.bluetoothcodethree.adapters.SpinnerAdapter
     var bluetoothManager: BluetoothManager? = null
     var overlay: RelativeLayout? = null
     var connectingCard: CardView? = null
     var firebaseDatabase: DatabaseReference? = null
     var remoteModelClassArrayList: ArrayList<RemoteModelClass>? = null
     var handler: Handler? = null
+    val list = ArrayList<Face>()
     @SuppressLint("ClickableViewAccessibility")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -175,6 +180,18 @@ class ControllerActivity : AppCompatActivity(), OnTouchListener {
         firebaseDatabase = FirebaseDatabase.getInstance().reference
         remoteModelClassArrayList = ArrayList()
         handler = Handler()
+        list.add(Face("Hello World",R.drawable.ic_face_black_24dp,"X"))
+        list.add(Face("Hello World",R.drawable.ic_face_black_24dp,"A"))
+        list.add(Face("Hello World",R.drawable.ic_face_black_24dp,"B"))
+        list.add(Face("Hello World",R.drawable.ic_face_black_24dp,"C"))
+        list.add(Face("Hello World",R.drawable.ic_face_black_24dp,"D"))
+        list.add(Face("Hello World",R.drawable.ic_face_black_24dp,"E"))
+        list.add(Face("Hello World",R.drawable.ic_face_black_24dp,"F"))
+        faceAdapter =  SpinnerAdapter(this,R.layout.spinner_item,list)
+        faceSpinner.adapter =  faceAdapter
+        faceSpinner.onItemSelectedListener = this
+
+
     }
 
     override fun onWindowFocusChanged(hasFocus: Boolean) {
@@ -340,5 +357,15 @@ class ControllerActivity : AppCompatActivity(), OnTouchListener {
         const val RemoteSharedPreference = "REMOTE-PREFERENCE"
         private const val TAG = "ControllerActivity"
 
+    }
+
+    override fun onNothingSelected(p0: AdapterView<*>?) {
+
+    }
+
+    override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
+        var face:Face =  p0?.getItemAtPosition(p2) as Face
+        if(socket.isConnected)
+        writeToBluetooth(face.instruction)
     }
 }
